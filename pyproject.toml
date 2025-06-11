@@ -5,19 +5,29 @@ description = "A FastAPI application for vulnerability tracking."
 authors = ["Jack Del Aguila <inbox@jackby03.com>"]
 license = "Proprietary"
 readme = "README.md"
-    homepage = "https://github.com/yourusername/vulntrack-backend"
-repository = "https://github.com/yourusername/vulntrack-backend"
+homepage = "https://github.com/zentrybox/vulntrack-backend"
+repository = "https://github.com/zentrybox/vulntrack-backend"
 keywords = ["fastapi", "vulnerability", "tracking"]
+packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-fastapi = "^0.75.0"
-uvicorn = "^0.17.0"
-pydantic = "^1.9.0"
+python = "^3.11"
+fastapi = "^0.115.0"
+uvicorn = {extras = ["standard"], version = "^0.32.0"}
+pydantic = "^2.9.0"
+pydantic-settings = "^2.5.0"
+sqlalchemy = "^2.0.0"
+psycopg2-binary = "^2.9.0"
+asyncpg = "^0.29.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+python-multipart = "^0.0.19"
+alembic = "^1.13.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^7.0.0"
 httpx = "^0.23.0"
+requests = "^2.31.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
