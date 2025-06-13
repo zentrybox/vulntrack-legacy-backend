@@ -1,0 +1,301 @@
+name: 🚀 Deploy to Production
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      tag:
+        description: 'Docker image tag to deploy'
+        required: true
+        default: 'latest'
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ==========================================
+  # Pre-deployment Checks
+  # ==========================================
+  pre-deployment:
+    name: 🔍 Pre-deployment Checks
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.config.outputs.environment }}
+      image_tag: ${{ steps.config.outputs.image_tag }}
+      deploy_url: ${{ steps.config.outputs.deploy_url }}
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: ⚙️ Configure Deployment
+      id: config
+      run: |
+        if [[ "${{ github.event_name }}" == "release" ]]; then
+          ENVIRONMENT="production"
+          IMAGE_TAG="${{ github.event.release.tag_name }}"
+          DEPLOY_URL="https://vulntrack.production.com"
+        else
+          ENVIRONMENT="${{ github.event.inputs.environment }}"
+          IMAGE_TAG="${{ github.event.inputs.tag }}"
+          if [[ "$ENVIRONMENT" == "production" ]]; then
+            DEPLOY_URL="https://vulntrack.production.com"
+          else
+            DEPLOY_URL="https://vulntrack.staging.com"
+          fi
+        fi
+        
+        echo "environment=${ENVIRONMENT}" >> $GITHUB_OUTPUT
+        echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+        echo "deploy_url=${DEPLOY_URL}" >> $GITHUB_OUTPUT
+        
+        echo "🎯 Target Environment: ${ENVIRONMENT}"
+        echo "🏷️ Image Tag: ${IMAGE_TAG}"
+        echo "🌐 Deploy URL: ${DEPLOY_URL}"
+
+    - name: 🔍 Verify Image Exists
+      run: |
+        echo "🔍 Verifying Docker image exists..."
+        docker manifest inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.config.outputs.image_tag }}
+
+    - name: 🔒 Security Pre-check
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.config.outputs.image_tag }}
+        format: 'table'
+        severity: 'CRITICAL,HIGH'
+        exit-code: '1'
+
+  # ==========================================
+  # Deploy to Staging
+  # ==========================================
+  deploy-staging:
+    name: 🧪 Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: pre-deployment
+    if: needs.pre-deployment.outputs.environment == 'staging'
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🔧 Setup Deployment Tools
+      run: |
+        # Install kubectl
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+        
+        # Install helm
+        curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+        sudo apt-get update
+        sudo apt-get install apt-transport-https --yes
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+        sudo apt-get update
+        sudo apt-get install helm
+
+    - name: 🔑 Configure Kubernetes
+      run: |
+        # Configure kubectl for staging
+        echo "${{ secrets.KUBECONFIG_STAGING }}" | base64 -d > kubeconfig
+        export KUBECONFIG=kubeconfig
+        kubectl cluster-info
+
+    - name: 🧪 Deploy to Staging
+      run: |
+        export KUBECONFIG=kubeconfig
+        
+        # Update deployment image
+        kubectl set image deployment/vulntrack-backend \
+          vulntrack-backend=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.pre-deployment.outputs.image_tag }} \
+          -n vulntrack-staging
+        
+        # Wait for rollout
+        kubectl rollout status deployment/vulntrack-backend -n vulntrack-staging --timeout=300s
+        
+        echo "🧪 Staging deployment completed!"
+
+    - name: 🔍 Post-deployment Health Check
+      run: |
+        sleep 30
+        curl -f ${{ needs.pre-deployment.outputs.deploy_url }}/health || exit 1
+        echo "✅ Staging health check passed!"
+
+  # ==========================================
+  # Deploy to Production
+  # ==========================================
+  deploy-production:
+    name: 🚀 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: pre-deployment
+    if: needs.pre-deployment.outputs.environment == 'production'
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🔧 Setup Deployment Tools
+      run: |
+        # Install kubectl
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+        
+        # Install helm
+        curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+        sudo apt-get update
+        sudo apt-get install apt-transport-https --yes
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+        sudo apt-get update
+        sudo apt-get install helm
+
+    - name: 🔑 Configure Kubernetes
+      run: |
+        # Configure kubectl for production
+        echo "${{ secrets.KUBECONFIG_PRODUCTION }}" | base64 -d > kubeconfig
+        export KUBECONFIG=kubeconfig
+        kubectl cluster-info
+
+    - name: 📋 Pre-production Backup
+      run: |
+        export KUBECONFIG=kubeconfig
+        
+        # Create database backup
+        kubectl create job --from=cronjob/database-backup database-backup-$(date +%Y%m%d-%H%M%S) -n vulntrack-production
+        
+        echo "📋 Database backup initiated"
+
+    - name: 🚀 Blue-Green Deployment to Production
+      run: |
+        export KUBECONFIG=kubeconfig
+        
+        # Blue-green deployment strategy
+        echo "🚀 Starting blue-green deployment..."
+        
+        # Update green deployment
+        kubectl set image deployment/vulntrack-backend-green \
+          vulntrack-backend=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.pre-deployment.outputs.image_tag }} \
+          -n vulntrack-production
+        
+        # Wait for green deployment
+        kubectl rollout status deployment/vulntrack-backend-green -n vulntrack-production --timeout=300s
+        
+        # Health check on green
+        sleep 30
+        kubectl port-forward service/vulntrack-backend-green 8080:8000 -n vulntrack-production &
+        sleep 10
+        curl -f http://localhost:8080/health || exit 1
+        
+        # Switch traffic to green
+        kubectl patch service vulntrack-backend-service \
+          -p '{"spec":{"selector":{"version":"green"}}}' \
+          -n vulntrack-production
+        
+        echo "🚀 Production deployment completed!"
+
+    - name: 🔍 Post-deployment Verification
+      run: |
+        sleep 60
+        
+        # Health check
+        curl -f ${{ needs.pre-deployment.outputs.deploy_url }}/health || exit 1
+        
+        # API functionality check
+        curl -f ${{ needs.pre-deployment.outputs.deploy_url }}/api/v1/vulnerabilities/scan/status || exit 1
+        
+        echo "✅ Production verification passed!"
+
+    - name: 🧹 Cleanup Old Deployment
+      run: |
+        export KUBECONFIG=kubeconfig
+        
+        # Scale down blue deployment after successful green deployment
+        kubectl scale deployment vulntrack-backend-blue --replicas=0 -n vulntrack-production
+        
+        echo "🧹 Cleanup completed"
+
+  # ==========================================
+  # Deployment Rollback (Manual)
+  # ==========================================
+  rollback:
+    name: 🔄 Rollback Deployment
+    runs-on: ubuntu-latest
+    if: failure()
+    needs: [pre-deployment, deploy-production]
+
+    steps:
+    - name: 🔄 Rollback Production
+      run: |
+        export KUBECONFIG=kubeconfig
+        
+        echo "🔄 Rolling back production deployment..."
+        
+        # Switch traffic back to blue (previous version)
+        kubectl patch service vulntrack-backend-service \
+          -p '{"spec":{"selector":{"version":"blue"}}}' \
+          -n vulntrack-production
+        
+        # Scale up blue deployment
+        kubectl scale deployment vulntrack-backend-blue --replicas=3 -n vulntrack-production
+        
+        # Scale down green deployment
+        kubectl scale deployment vulntrack-backend-green --replicas=0 -n vulntrack-production
+        
+        echo "🔄 Rollback completed!"
+
+    - name: 🔍 Post-rollback Verification
+      run: |
+        sleep 30
+        curl -f ${{ needs.pre-deployment.outputs.deploy_url }}/health || exit 1
+        echo "✅ Rollback verification passed!"
+
+  # ==========================================
+  # Deployment Notification
+  # ==========================================
+  notify:
+    name: 📢 Deployment Notification
+    runs-on: ubuntu-latest
+    needs: [pre-deployment, deploy-staging, deploy-production]
+    if: always()
+
+    steps:
+    - name: 📢 Success Notification
+      if: success()
+      run: |
+        echo "## ✅ Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🎯 Deployment Details:" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: ${{ needs.pre-deployment.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Image Tag**: ${{ needs.pre-deployment.outputs.image_tag }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **URL**: ${{ needs.pre-deployment.outputs.deploy_url }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Time**: $(date -u)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🔗 Quick Links:" >> $GITHUB_STEP_SUMMARY
+        echo "- [Application](${{ needs.pre-deployment.outputs.deploy_url }})" >> $GITHUB_STEP_SUMMARY
+        echo "- [API Documentation](${{ needs.pre-deployment.outputs.deploy_url }}/docs)" >> $GITHUB_STEP_SUMMARY
+        echo "- [Health Check](${{ needs.pre-deployment.outputs.deploy_url }}/health)" >> $GITHUB_STEP_SUMMARY
+
+    - name: 📢 Failure Notification
+      if: failure()
+      run: |
+        echo "## ❌ Deployment Failed!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🎯 Deployment Details:" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: ${{ needs.pre-deployment.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Image Tag**: ${{ needs.pre-deployment.outputs.image_tag }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Time**: $(date -u)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🔄 Next Steps:" >> $GITHUB_STEP_SUMMARY
+        echo "1. Check the deployment logs above" >> $GITHUB_STEP_SUMMARY
+        echo "2. Verify the Docker image exists and is accessible" >> $GITHUB_STEP_SUMMARY
+        echo "3. Check Kubernetes cluster status" >> $GITHUB_STEP_SUMMARY
+        echo "4. Review security scan results" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,282 @@
+name: 🔒 Security Scan
+
+on:
+  schedule:
+    # Run security scans daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # ==========================================
+  # Dependency Security Scan
+  # ==========================================
+  dependency-scan:
+    name: 🔍 Dependency Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: 📦 Install Poetry
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+
+    - name: 📦 Install Dependencies
+      run: |
+        poetry install --with dev
+
+    - name: 🔒 Safety Check (Python Dependencies)
+      run: |
+        poetry run safety check --json --output safety-report.json
+        poetry run safety check
+
+    - name: 🔍 Bandit Security Scan
+      run: |
+        poetry run bandit -r app/ -f json -o bandit-report.json
+        poetry run bandit -r app/
+
+    - name: 📊 Upload Security Reports
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: security-reports
+        path: |
+          safety-report.json
+          bandit-report.json
+
+  # ==========================================
+  # Code Security Analysis with CodeQL
+  # ==========================================
+  codeql-analysis:
+    name: 🔎 CodeQL Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🔎 Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: python
+        queries: +security-extended,security-and-quality
+
+    - name: 🏗️ Autobuild
+      uses: github/codeql-action/autobuild@v2
+
+    - name: 🔍 Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+      with:
+        category: "/language:python"
+
+  # ==========================================
+  # Docker Image Security Scan
+  # ==========================================
+  docker-security-scan:
+    name: 🐳 Docker Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐳 Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: 🏗️ Build Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        load: true
+        tags: vulntrack-backend:security-scan
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: 🔒 Run Trivy Vulnerability Scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: vulntrack-backend:security-scan
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: 📊 Upload Trivy Results to GitHub Security
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+    - name: 🔒 Run Trivy for Critical/High Vulnerabilities
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: vulntrack-backend:security-scan
+        format: 'table'
+        severity: 'CRITICAL,HIGH'
+
+  # ==========================================
+  # Secrets Scanning
+  # ==========================================
+  secret-scan:
+    name: 🔐 Secrets Scanning
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🔐 TruffleHog Secret Scan
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: main
+        head: HEAD
+        extra_args: --debug --only-verified
+
+  # ==========================================
+  # License Compliance Check
+  # ==========================================
+  license-check:
+    name: ⚖️ License Compliance
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: 📦 Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry pip-licenses
+
+    - name: 📦 Install Project Dependencies
+      run: |
+        poetry install
+
+    - name: ⚖️ Check Licenses
+      run: |
+        poetry run pip-licenses --format=json --output-file=licenses-report.json
+        poetry run pip-licenses --format=markdown --output-file=licenses-report.md
+        poetry run pip-licenses
+
+    - name: 📊 Upload License Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: license-report
+        path: |
+          licenses-report.json
+          licenses-report.md
+
+  # ==========================================
+  # API Security Testing
+  # ==========================================
+  api-security-test:
+    name: 🌐 API Security Testing
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_USER: testuser
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: 📦 Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install
+
+    - name: 🚀 Start API Server
+      env:
+        DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+        ENVIRONMENT: testing
+        SECRET_KEY: test-secret-key-for-security-testing
+      run: |
+        poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+        sleep 10
+
+    - name: 🔍 API Health Check
+      run: |
+        curl -f http://localhost:8000/ || exit 1
+
+    - name: 🛡️ OWASP ZAP Baseline Scan
+      uses: zaproxy/action-baseline@v0.10.0
+      with:
+        target: 'http://localhost:8000'
+        rules_file_name: '.zap/rules.tsv'
+        cmd_options: '-a'
+
+  # ==========================================
+  # Security Report Summary
+  # ==========================================
+  security-summary:
+    name: 📊 Security Summary
+    runs-on: ubuntu-latest
+    needs: [dependency-scan, codeql-analysis, docker-security-scan, secret-scan, license-check]
+    if: always()
+
+    steps:
+    - name: 📊 Generate Security Summary
+      run: |
+        echo "## 🔒 VulnTrack Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📋 Scan Results:" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔍 Dependency Scan: ${{ needs.dependency-scan.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔎 CodeQL Analysis: ${{ needs.codeql-analysis.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- 🐳 Docker Security: ${{ needs.docker-security-scan.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔐 Secret Scan: ${{ needs.secret-scan.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- ⚖️ License Check: ${{ needs.license-check.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🛡️ Security Status:" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ "${{ needs.dependency-scan.result }}" == "success" && 
+              "${{ needs.codeql-analysis.result }}" == "success" && 
+              "${{ needs.docker-security-scan.result }}" == "success" && 
+              "${{ needs.secret-scan.result }}" == "success" ]]; then
+          echo "✅ **All security scans passed!**" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ **Some security scans failed. Please review the results.**" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📅 Scan Information:" >> $GITHUB_STEP_SUMMARY
+        echo "- **Date**: $(date -u)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
