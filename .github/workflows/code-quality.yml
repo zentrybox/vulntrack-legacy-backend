@@ -19,8 +19,7 @@ jobs:
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0
-
+        fetch-depth: 0    
     - name: 🐍 Set up Python
       uses: actions/setup-python@v4
       with:
@@ -43,6 +42,9 @@ jobs:
     - name: 📚 Install Dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --with dev
+
+    - name: 🧹 Ensure tests Directory Exists
+      run: mkdir -p tests
 
     - name: 🧹 Ruff Format Check
       run: |
