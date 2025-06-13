@@ -34,10 +34,14 @@ pytest-asyncio = "^0.21.0"
 pytest-mock = "^3.11.0"
 pytest-cov = "^4.1.0"
 requests = "^2.31.0"
-ruff = "^0.7.0"
+black = "^23.0.0"
+isort = "^5.12.0"
+flake8 = "^6.0.0"
 mypy = "^1.7.0"
 bandit = "^1.7.5"
 safety = "^2.3.0"
+types-passlib = "^1.7.0"
+types-requests = "^2.31.0"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -56,56 +60,23 @@ markers = [
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-# Ruff configuration
-[tool.ruff]
+# Black configuration
+[tool.black]
 line-length = 88
-target-version = "py311"
-exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".git-rewrite",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pytype",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "venv",
-    "alembic",
-]
+target-version = ['py311']
+include = '\.pyi?$'
 
-[tool.ruff.lint]
-select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # pyflakes
-    "I",   # isort
-    "B",   # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "UP",  # pyupgrade
-]
-ignore = [
-    "E501",  # line too long, handled by black
-    "B008",  # do not perform function calls in argument defaults
-    "C901",  # too complex
-]
+# isort configuration
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["app"]
 
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-skip-magic-trailing-comma = false
-line-ending = "auto"
-
-[tool.ruff.lint.isort]
-known-first-party = ["app"]
+# mypy configuration
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true

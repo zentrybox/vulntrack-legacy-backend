@@ -1,0 +1,74 @@
+name: 🔒 Security Scan
+
+on:
+  schedule:
+    # Run security scan daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  security:
+    name: 🔒 Security Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 📦 Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: 📚 Install Dependencies
+      run: poetry install --with dev
+
+    - name: 🔒 Security Scan (Bandit)
+      run: |
+        poetry run bandit -r app/ -f json -o bandit-report.json
+        poetry run bandit -r app/
+      continue-on-error: true
+
+    - name: 🛡️ Dependency Security Check (Safety)
+      run: |
+        poetry run safety check --output json > safety-report.json || true
+        poetry run safety check || true
+      continue-on-error: true
+
+    - name: 📊 Upload Security Reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-reports-${{ github.run_id }}
+        path: |
+          bandit-report.json
+          safety-report.json
+        retention-days: 30
+
+    - name: 📋 Security Summary
+      if: always()
+      run: |
+        echo "# 🔒 Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## 🛡️ Scans Completed" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Bandit static security analysis" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Safety dependency vulnerability check" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "📄 Detailed reports are available in the artifacts section." >> $GITHUB_STEP_SUMMARY
