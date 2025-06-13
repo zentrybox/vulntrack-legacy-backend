@@ -1,0 +1,135 @@
+name: 🔍 Code Quality & Security
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_call:
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  code-quality:
+    name: 🔍 Code Quality & Security Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 📦 Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: 🔧 Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v3
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: 📚 Install Dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --with dev
+
+    - name: 🎨 Check Code Formatting (Black)
+      run: |
+        poetry run black --check --diff app/ tests/
+      continue-on-error: false
+
+    - name: 📏 Check Import Sorting (isort)
+      run: |
+        poetry run isort --check-only --diff app/ tests/
+      continue-on-error: false
+
+    - name: 🔍 Lint Code (flake8)
+      run: |
+        poetry run flake8 app/ tests/ --format=json --output-file=flake8-report.json
+        poetry run flake8 app/ tests/
+      continue-on-error: true
+
+    - name: 🦆 Type Check (mypy)
+      run: |
+        poetry run mypy app/ --junit-xml=mypy-report.xml
+      continue-on-error: true
+
+    - name: 🔒 Security Scan (Bandit)
+      run: |
+        poetry run bandit -r app/ -f json -o bandit-report.json
+        poetry run bandit -r app/
+      continue-on-error: true
+
+    - name: 🛡️ Dependency Security Check (Safety)
+      run: |
+        poetry run safety check --json --output safety-report.json
+        poetry run safety check
+      continue-on-error: true
+
+    - name: 📊 Upload Security Reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-reports-${{ github.run_id }}
+        path: |
+          bandit-report.json
+          safety-report.json
+          flake8-report.json
+          mypy-report.xml
+        retention-days: 30
+
+    - name: 📈 Comment PR with Results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          
+          let comment = '## 🔍 Code Quality Report\n\n';
+          
+          // Add results summary
+          comment += '| Tool | Status |\n|------|--------|\n';
+          comment += '| Black | ✅ Formatting check passed |\n';
+          comment += '| isort | ✅ Import sorting check passed |\n';
+          comment += '| flake8 | ⚠️ See detailed report |\n';
+          comment += '| mypy | ⚠️ See detailed report |\n';
+          comment += '| bandit | ⚠️ See security report |\n';
+          comment += '| safety | ⚠️ See dependency report |\n';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  notify-status:
+    name: 📢 Notify Quality Status
+    runs-on: ubuntu-latest
+    needs: code-quality
+    if: always()
+    
+    steps:
+    - name: ✅ Quality Check Passed
+      if: needs.code-quality.result == 'success'
+      run: |
+        echo "## ✅ Code Quality: PASSED" >> $GITHUB_STEP_SUMMARY
+        echo "All code quality checks have passed successfully!" >> $GITHUB_STEP_SUMMARY
+
+    - name: ❌ Quality Check Failed
+      if: needs.code-quality.result == 'failure'
+      run: |
+        echo "## ❌ Code Quality: FAILED" >> $GITHUB_STEP_SUMMARY
+        echo "Some code quality checks have failed. Please review the reports." >> $GITHUB_STEP_SUMMARY
+        exit 1

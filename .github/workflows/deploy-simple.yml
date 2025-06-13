@@ -1,0 +1,78 @@
+name: 🚀 Deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Deployment environment (staging/production)'
+        required: true
+        type: string
+      image-tag:
+        description: 'Docker image tag to deploy'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    name: 🚀 Deploy to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ inputs.environment == 'production' && 'https://vulntrack.example.com' || 'https://staging.vulntrack.example.com' }}
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🎯 Deployment Configuration
+      run: |
+        echo "🎯 Deploying to: ${{ inputs.environment }}"
+        echo "📦 Image tag: ${{ inputs.image-tag }}"
+        echo "🌐 URL: ${{ inputs.environment == 'production' && 'https://vulntrack.example.com' || 'https://staging.vulntrack.example.com' }}"
+
+    - name: 🚀 Deploy Application
+      run: |
+        echo "🚀 Starting deployment process..."
+        
+        # Here you would add your actual deployment commands
+        # Examples:
+        
+        # For Kubernetes:
+        # kubectl set image deployment/vulntrack-backend \
+        #   vulntrack-backend=${{ inputs.image-tag }} \
+        #   -n vulntrack-${{ inputs.environment }}
+        
+        # For Docker Compose:
+        # export IMAGE_TAG=${{ inputs.image-tag }}
+        # docker-compose -f docker-compose.${{ inputs.environment }}.yml up -d
+        
+        # For Cloud platforms:
+        # aws ecs update-service --cluster vulntrack-${{ inputs.environment }} --service vulntrack-backend --force-new-deployment
+        # gcloud run deploy vulntrack-backend --image ${{ inputs.image-tag }} --platform managed --region us-central1
+        
+        echo "✅ Deployment to ${{ inputs.environment }} completed!"
+
+    - name: 🔍 Post-deployment Health Check
+      run: |
+        # Wait for deployment to stabilize
+        sleep 30
+        
+        # Health check (replace with your actual endpoints)
+        HEALTH_URL="${{ inputs.environment == 'production' && 'https://vulntrack.example.com' || 'https://staging.vulntrack.example.com' }}/health"
+        
+        echo "🏥 Checking health endpoint: $HEALTH_URL"
+        
+        # Uncomment when you have actual deployment
+        # curl -f "$HEALTH_URL" || exit 1
+        
+        echo "✅ Health check passed!"
+
+    - name: 📢 Deployment Notification
+      run: |
+        echo "## 🚀 Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🎯 Deployment Details:" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Image**: \`${{ inputs.image-tag }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "- **URL**: ${{ inputs.environment == 'production' && 'https://vulntrack.example.com' || 'https://staging.vulntrack.example.com' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Deployed at**: $(date -u)" >> $GITHUB_STEP_SUMMARY

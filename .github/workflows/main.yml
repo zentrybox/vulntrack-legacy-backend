@@ -1,0 +1,122 @@
+name: 🚀 VulnTrack CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  # ==========================================
+  # Code Quality Check
+  # ==========================================
+  quality:
+    name: 🔍 Code Quality
+    uses: ./.github/workflows/code-quality.yml
+
+  # ==========================================
+  # Test Suite
+  # ==========================================
+  test:
+    name: 🧪 Tests
+    uses: ./.github/workflows/test.yml
+    needs: quality
+
+  # ==========================================
+  # Build Docker Image
+  # ==========================================
+  build:
+    name: 🐳 Build
+    uses: ./.github/workflows/build.yml
+    needs: [quality, test]
+    if: github.event_name == 'push'
+
+  # ==========================================  # ==========================================
+  # Deploy to Staging
+  # ==========================================
+  deploy-staging:
+    name: 🧪 Deploy Staging
+    uses: ./.github/workflows/deploy-simple.yml
+    needs: [quality, test, build]
+    if: github.ref == 'refs/heads/develop'
+    with:
+      environment: staging
+      image-tag: develop-latest
+    secrets: inherit
+
+  # ==========================================
+  # Deploy to Production
+  # ==========================================
+  deploy-production:
+    name: 🚀 Deploy Production
+    uses: ./.github/workflows/deploy-simple.yml
+    needs: [quality, test, build]
+    if: github.ref == 'refs/heads/main'
+    with:
+      environment: production
+      image-tag: main-latest
+    secrets: inherit
+
+  # ==========================================
+  # Pipeline Summary
+  # ==========================================
+  summary:
+    name: 📋 Pipeline Summary
+    runs-on: ubuntu-latest
+    needs: [quality, test, build, deploy-staging, deploy-production]
+    if: always()
+    
+    steps:
+    - name: 📊 Generate Pipeline Summary
+      run: |
+        echo "# 🚀 VulnTrack CI/CD Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## 📊 Pipeline Status" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Stage | Status | Duration |" >> $GITHUB_STEP_SUMMARY
+        echo "|-------|--------|----------|" >> $GITHUB_STEP_SUMMARY
+        echo "| 🔍 Code Quality | ${{ needs.quality.result == 'success' && '✅ PASSED' || needs.quality.result == 'skipped' && '⏭️ SKIPPED' || '❌ FAILED' }} | - |" >> $GITHUB_STEP_SUMMARY
+        echo "| 🧪 Tests | ${{ needs.test.result == 'success' && '✅ PASSED' || needs.test.result == 'skipped' && '⏭️ SKIPPED' || '❌ FAILED' }} | - |" >> $GITHUB_STEP_SUMMARY
+        echo "| 🐳 Build | ${{ needs.build.result == 'success' && '✅ SUCCESS' || needs.build.result == 'skipped' && '⏭️ SKIPPED' || '❌ FAILED' }} | - |" >> $GITHUB_STEP_SUMMARY
+        echo "| 🧪 Staging Deploy | ${{ needs.deploy-staging.result == 'success' && '✅ DEPLOYED' || needs.deploy-staging.result == 'skipped' && '⏭️ SKIPPED' || '❌ FAILED' }} | - |" >> $GITHUB_STEP_SUMMARY
+        echo "| 🚀 Production Deploy | ${{ needs.deploy-production.result == 'success' && '✅ DEPLOYED' || needs.deploy-production.result == 'skipped' && '⏭️ SKIPPED' || '❌ FAILED' }} | - |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Overall status
+        if [[ "${{ needs.quality.result }}" == "success" && "${{ needs.test.result }}" == "success" ]]; then
+          if [[ "${{ github.event_name }}" == "push" && "${{ needs.build.result }}" == "success" ]]; then
+            echo "## 🎉 Pipeline completed successfully!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 🎯 Next Steps:" >> $GITHUB_STEP_SUMMARY
+            if [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+              echo "- ✅ Code is ready for testing in staging environment" >> $GITHUB_STEP_SUMMARY
+              echo "- 🔄 Consider creating a PR to main for production deployment" >> $GITHUB_STEP_SUMMARY
+            elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+              echo "- ✅ Code has been deployed to production" >> $GITHUB_STEP_SUMMARY
+              echo "- 📊 Monitor application health and performance" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "## ✅ Quality checks passed!" >> $GITHUB_STEP_SUMMARY
+            echo "- All code quality and tests are passing" >> $GITHUB_STEP_SUMMARY
+          fi
+        else
+          echo "## ❌ Pipeline failed!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔧 Issues to fix:" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ needs.quality.result }}" != "success" ]]; then
+            echo "- 🔍 Code quality issues need to be resolved" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [[ "${{ needs.test.result }}" != "success" ]]; then
+            echo "- 🧪 Test failures need to be fixed" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [[ "${{ needs.build.result }}" == "failure" ]]; then
+            echo "- 🐳 Docker build issues need to be resolved" >> $GITHUB_STEP_SUMMARY
+          fi
+        fi
+        
+        # Add useful links
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🔗 Useful Links:" >> $GITHUB_STEP_SUMMARY
+        echo "- [Repository](https://github.com/${{ github.repository }})" >> $GITHUB_STEP_SUMMARY
+        echo "- [Actions](https://github.com/${{ github.repository }}/actions)" >> $GITHUB_STEP_SUMMARY
+        echo "- [Security](https://github.com/${{ github.repository }}/security)" >> $GITHUB_STEP_SUMMARY

@@ -1,242 +1,144 @@
-## 🚀 Workflows Overview
+# 🚀 Modular GitHub Actions Workflows
 
-### 1. **CI/CD Pipeline** (`.github/workflows/ci-cd.yml`)
-**Triggers:** Push to `main`/`develop`, Pull Requests
-**Features:**
-- ✅ Code quality checks (Black, isort, flake8, mypy)
-- 🔒 Security audits (Bandit, Safety)
-- 🧪 Unit & integration tests with coverage
-- 🐳 Docker build & security scan
-- ⚡ Performance testing with Locust
-- 🚀 Automated deployment to staging/production
+This directory contains a modular CI/CD pipeline broken down into specialized, focused workflows. This approach makes it easier to maintain, debug, and understand each component.
 
-### 2. **Security Scan** (`.github/workflows/security-scan.yml`)
-**Triggers:** Daily schedule, Push to `main`, Pull Requests
-**Features:**
-- 🔍 Dependency vulnerability scanning
-- 🔎 CodeQL security analysis
-- 🐳 Docker image security scan with Trivy
-- 🔐 Secret scanning with TruffleHog
-- ⚖️ License compliance checking
-- 🛡️ API security testing with OWASP ZAP
+## 📁 Workflow Structure
 
-### 3. **Release Management** (`.github/workflows/release.yml`)
-**Triggers:** Git tags (`v*.*.*`), Manual workflow dispatch
-**Features:**
-- 🎯 Automated release preparation
-- 🏗️ Multi-architecture Docker builds
-- 🔒 Container image signing with Cosign
-- 📝 Automated release notes generation
-- 📦 GitHub release creation
-- 🚀 Production deployment
+### 🎯 Main Orchestrator
+- **`main.yml`** - Main pipeline orchestrator that calls other workflows
 
-### 4. **Deployment** (`.github/workflows/deploy.yml`)
-**Triggers:** Release published, Manual workflow dispatch
-**Features:**
-- 🔍 Pre-deployment security checks
-- 🧪 Blue-green deployment to staging
-- 🚀 Production deployment with rollback
-- 🔄 Automated rollback on failure
-- 📢 Deployment notifications
+### 🔍 Specialized Workflows
+- **`code-quality.yml`** - Code formatting, linting, security scans
+- **`test.yml`** - Unit tests, integration tests, coverage reporting
+- **`build.yml`** - Docker image building and container security scanning
+- **`deploy-simple.yml`** - Deployment to staging/production environments
 
-## 🔧 Setup Requirements
+### 📜 Legacy Workflows
+- **`ci-cd.yml`** - Original monolithic workflow (kept for reference)
+- **`deploy.yml`** - Original complex deployment workflow
 
-### Repository Secrets
-Add these secrets to your GitHub repository (`Settings > Secrets and variables > Actions`):
+## 🏗️ Pipeline Flow
+
+```mermaid
+graph TD
+    A[Push/PR] --> B[Code Quality]
+    B --> C[Tests]
+    C --> D[Build Docker Image]
+    D --> E{Branch?}
+    E -->|develop| F[Deploy to Staging]
+    E -->|main| G[Deploy to Production]
+    F --> H[Pipeline Summary]
+    G --> H
+```
+
+## ✅ Benefits of Modular Approach
+
+### 🔧 **Maintainability**
+- **Single Responsibility**: Each workflow has one clear purpose
+- **Easier Debugging**: Issues are isolated to specific components
+- **Independent Updates**: Modify one workflow without affecting others
+
+### 🚀 **Reusability**
+- **Workflow Calls**: Workflows can be called from other workflows
+- **Parameterization**: Pass different inputs for different environments
+- **Consistency**: Same workflow logic across multiple triggers
+
+### 📊 **Visibility**
+- **Clear Naming**: Easy to identify which component failed
+- **Focused Logs**: Smaller, more focused log outputs
+- **Better Reporting**: Individual status for each pipeline stage
+
+### ⚡ **Performance**
+- **Parallel Execution**: Independent workflows can run in parallel
+- **Selective Runs**: Only run necessary workflows based on changes
+- **Efficient Caching**: More granular caching strategies
+
+## 🎮 How to Use
+
+### 🔄 Automatic Triggers
+The main workflow (`main.yml`) automatically triggers on:
+- **Push** to `main` or `develop` branches
+- **Pull Requests** to `main` or `develop` branches
+
+### 🎯 Manual Triggers
+Individual workflows can be triggered manually:
 
 ```bash
-# External API Keys (for testing)
-GEMINI_API_KEY_TEST=your_test_gemini_api_key
-BRAVE_SEARCH_API_KEY_TEST=your_test_brave_search_api_key
+# Trigger code quality check only
+gh workflow run code-quality.yml
 
-# Production API Keys
-GEMINI_API_KEY=your_production_gemini_api_key
-BRAVE_SEARCH_API_KEY=your_production_brave_search_api_key
+# Trigger tests only
+gh workflow run test.yml
 
-# Kubernetes Configuration (base64 encoded)
-KUBECONFIG_STAGING=base64_encoded_staging_kubeconfig
-KUBECONFIG_PRODUCTION=base64_encoded_production_kubeconfig
-
-# Container Registry
-GITHUB_TOKEN=automatically_provided_by_github
-
-# Monitoring & Notifications
-SLACK_WEBHOOK_URL=your_slack_webhook_url
-DISCORD_WEBHOOK_URL=your_discord_webhook_url
+# Trigger build only
+gh workflow run build.yml
 ```
 
-### Environment Variables
-Configure these in your deployment environments:
+### 🔧 Debugging Individual Components
 
-```bash
-# Application
-SECRET_KEY=your_super_secure_secret_key
-ENVIRONMENT=production
-DEBUG=false
+If a specific component fails, you can:
 
-# Database
-DATABASE_URL=postgresql://user:password@host:port/database
-MONGODB_URL=mongodb://user:password@host:port/database
+1. **Check the specific workflow logs**
+2. **Run only that workflow** to isolate the issue
+3. **Fix the issue** without running the entire pipeline
+4. **Re-run just that component** to verify the fix
 
-# External APIs
-GEMINI_API_KEY=your_gemini_api_key
-BRAVE_SEARCH_API_KEY=your_brave_search_api_key
-```
+## 📋 Workflow Details
 
-## 📊 Pipeline Stages
+### 🔍 Code Quality (`code-quality.yml`)
+- **Black** code formatting check
+- **isort** import sorting check  
+- **flake8** linting
+- **mypy** type checking
+- **Bandit** security scanning
+- **Safety** dependency vulnerability check
 
-### Code Quality Stage
-1. **Black** - Code formatting
-2. **isort** - Import sorting
-3. **flake8** - Linting
-4. **mypy** - Type checking
-5. **Bandit** - Security analysis
-6. **Safety** - Dependency vulnerability check
+### 🧪 Tests (`test.yml`)
+- **Unit Tests** with pytest and coverage
+- **Integration Tests** with API testing
+- **Services**: PostgreSQL, MongoDB, Redis
+- **Coverage Reporting** to Codecov
 
-### Testing Stage
-1. **Unit Tests** - pytest with coverage
-2. **Integration Tests** - API endpoint testing
-3. **Performance Tests** - Load testing with Locust
-4. **Security Tests** - OWASP ZAP scanning
+### 🐳 Build (`build.yml`)
+- **Multi-platform** Docker builds (amd64, arm64)
+- **Container Security Scanning** with Trivy
+- **Image Testing** with basic health checks
+- **Registry Push** to GitHub Container Registry
 
-### Build Stage
-1. **Docker Build** - Multi-stage build
-2. **Security Scan** - Trivy vulnerability scan
-3. **Image Push** - GitHub Container Registry
-4. **Image Signing** - Cosign signature
+### 🚀 Deploy (`deploy-simple.yml`)
+- **Environment-specific** deployments
+- **Health Checks** post-deployment
+- **Configurable** for different deployment strategies
+- **Summary Reporting** with deployment details
 
-### Deployment Stage
-1. **Pre-deployment Checks** - Health and security validation
-2. **Blue-Green Deployment** - Zero-downtime deployment
-3. **Health Verification** - Post-deployment testing
-4. **Rollback** - Automatic rollback on failure
+## 🔄 Migration from Monolithic
 
-## 🏃‍♂️ Running Workflows
+The original `ci-cd.yml` has been preserved for reference. The new modular approach provides:
 
-### Manual Triggers
-Some workflows can be triggered manually:
+- ✅ **Same functionality** with better organization
+- ✅ **Improved error isolation** and debugging
+- ✅ **More flexible** workflow triggers
+- ✅ **Better maintainability** for future changes
 
-```bash
-# Trigger deployment
-gh workflow run deploy.yml -f environment=staging -f tag=v1.0.0
+## 🎯 Next Steps
 
-# Trigger release
-gh workflow run release.yml -f version=v1.0.0 -f prerelease=false
-
-# Trigger security scan
-gh workflow run security-scan.yml
-```
-
-### Automatic Triggers
-Workflows trigger automatically on:
-- **Push to main/develop** → CI/CD pipeline
-- **Pull Request** → CI/CD pipeline + security scan
-- **Git tag (v*.*.*)** → Release workflow
-- **Release published** → Deployment workflow
-- **Daily at 2 AM UTC** → Security scan
-
-## 📈 Monitoring & Notifications
-
-### Artifacts & Reports
-Each workflow generates artifacts:
-- 📊 Test coverage reports
-- 🔒 Security scan results
-- 📋 License compliance reports
-- ⚡ Performance test results
-- 📝 Release notes
-
-### Status Badges
-Add these badges to your README:
-
-```markdown
-![CI/CD](https://github.com/your-org/vulntrack-backend/workflows/CI%2FCD%20Pipeline/badge.svg)
-![Security](https://github.com/your-org/vulntrack-backend/workflows/Security%20Scan/badge.svg)
-![Release](https://github.com/your-org/vulntrack-backend/workflows/Release/badge.svg)
-```
+1. **Test the new workflows** with your repository
+2. **Customize deployment logic** in `deploy-simple.yml`
+3. **Add environment-specific secrets** in GitHub settings
+4. **Remove or archive** old workflows once validated
+5. **Extend workflows** as needed for your specific requirements
 
 ## 🛠️ Customization
 
-### Adding New Checks
-To add new quality checks, modify `.github/workflows/ci-cd.yml`:
+Each workflow can be easily customized:
 
-```yaml
-- name: 🔍 Your Custom Check
-  run: |
-    poetry run your-custom-tool app/
-```
+- **Modify triggers** in the `on:` section
+- **Add/remove steps** as needed
+- **Change environment variables** in the `env:` section
+- **Update secrets** and inputs for your infrastructure
 
-### Environment-Specific Deployments
-To add new environments, create new workflow files:
-- `.github/workflows/deploy-staging.yml`
-- `.github/workflows/deploy-production.yml`
+## 📚 Documentation
 
-### Custom Notifications
-Add notification steps to workflows:
-
-```yaml
-- name: 📢 Slack Notification
-  uses: 8398a7/action-slack@v3
-  with:
-    status: ${{ job.status }}
-    webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-```
-
-## 🚨 Troubleshooting
-
-### Common Issues
-
-1. **Test Failures**
-   - Check test logs in workflow artifacts
-   - Verify environment variables are set
-   - Ensure external API keys are valid
-
-2. **Security Scan Failures**
-   - Review Trivy and Bandit reports
-   - Update vulnerable dependencies
-   - Add security exceptions if needed
-
-3. **Deployment Failures**
-   - Verify Kubernetes configuration
-   - Check container registry access
-   - Validate environment secrets
-
-4. **Performance Issues**
-   - Review Locust performance reports
-   - Optimize database queries
-   - Scale application resources
-
-### Debug Mode
-Enable debug mode by adding to workflow:
-
-```yaml
-env:
-  ACTIONS_STEP_DEBUG: true
-  ACTIONS_RUNNER_DEBUG: true
-```
-
-## 📚 Best Practices
-
-1. **Security First**
-   - Never commit secrets to repository
-   - Use encrypted secrets for sensitive data
-   - Regular security scans and updates
-
-2. **Test Everything**
-   - Comprehensive test coverage (>90%)
-   - Integration tests for all endpoints
-   - Performance tests for critical paths
-
-3. **Automated Quality**
-   - Code formatting and linting
-   - Type checking and security analysis
-   - Dependency vulnerability scanning
-
-4. **Zero-Downtime Deployments**
-   - Blue-green deployment strategy
-   - Health checks and rollback mechanisms
-   - Database migration strategies
-
-5. **Monitoring & Observability**
-   - Comprehensive logging
-   - Performance monitoring
-   - Error tracking and alerting
+- [GitHub Actions Documentation](https://docs.github.com/en/actions)
+- [Workflow Syntax](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions)
+- [Reusable Workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows)

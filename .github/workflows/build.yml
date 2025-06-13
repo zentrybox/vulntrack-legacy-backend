@@ -1,0 +1,176 @@
+name: 🐳 Build & Push
+
+on:
+  push:
+    branches: [ main, develop ]
+  workflow_call:
+    inputs:
+      push-image:
+        description: 'Whether to push the built image'
+        required: false
+        type: boolean
+        default: true
+      tag-suffix:
+        description: 'Suffix for the image tag'
+        required: false
+        type: string
+        default: ''
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    name: 🐳 Build Docker Image
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🔧 Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: 🔐 Login to Container Registry
+      if: ${{ inputs.push-image || github.event_name == 'push' }}
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: 🏷️ Extract Metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=raw,value={{branch}}-{{date 'YYYYMMDD-HHmmss'}}
+          ${{ inputs.tag-suffix && format('type=raw,value={0}', inputs.tag-suffix) || '' }}
+
+    - name: 🐳 Build and Push Docker Image
+      id: build
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: ${{ inputs.push-image || github.event_name == 'push' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          BUILDTIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+          VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+          REVISION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
+
+  security-scan:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    needs: build
+    if: always() && needs.build.result == 'success'
+    
+    steps:
+    - name: 🔍 Run Trivy Vulnerability Scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ needs.build.outputs.image-tag }}
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: 📊 Upload Trivy Results to GitHub Security Tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+    - name: 🔍 Run Trivy for Summary
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ needs.build.outputs.image-tag }}
+        format: 'table'
+        output: 'trivy-summary.txt'
+
+    - name: 📊 Upload Security Scan Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-scan-results-${{ github.run_id }}
+        path: |
+          trivy-results.sarif
+          trivy-summary.txt
+        retention-days: 30
+
+  image-test:
+    name: 🧪 Test Docker Image
+    runs-on: ubuntu-latest
+    needs: build
+    if: always() && needs.build.result == 'success'
+    
+    steps:
+    - name: 🔧 Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: 🐳 Load Docker Image
+      run: |
+        docker pull ${{ needs.build.outputs.image-tag }}
+
+    - name: 🚀 Test Container Startup
+      run: |
+        # Start container
+        docker run -d --name vulntrack-test \
+          -p 8000:8000 \
+          -e ENVIRONMENT=testing \
+          ${{ needs.build.outputs.image-tag }}
+        
+        # Wait for startup
+        sleep 15
+        
+        # Test health endpoint
+        curl -f http://localhost:8000/health || exit 1
+        
+        # Test API endpoint
+        curl -f http://localhost:8000/api/v1/health || exit 1
+        
+        echo "✅ Container startup and basic endpoints test passed!"
+
+    - name: 🧹 Cleanup Test Container
+      if: always()
+      run: |
+        docker stop vulntrack-test || true
+        docker rm vulntrack-test || true
+
+  build-summary:
+    name: 📋 Build Summary
+    runs-on: ubuntu-latest
+    needs: [build, security-scan, image-test]
+    if: always()
+    
+    steps:
+    - name: 📊 Generate Build Summary
+      run: |
+        echo "## 🐳 Docker Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Component | Status |" >> $GITHUB_STEP_SUMMARY
+        echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Build | ${{ needs.build.result == 'success' && '✅ SUCCESS' || '❌ FAILED' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Security Scan | ${{ needs.security-scan.result == 'success' && '✅ PASSED' || '⚠️ ISSUES FOUND' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Image Test | ${{ needs.image-test.result == 'success' && '✅ PASSED' || '❌ FAILED' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ "${{ needs.build.result }}" == "success" ]]; then
+          echo "### 🎯 Build Details:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: \`${{ needs.build.outputs.image-tag }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Digest**: \`${{ needs.build.outputs.image-digest }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Registry**: \`${{ env.REGISTRY }}\`" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "### ❌ Build failed! Please check the build logs." >> $GITHUB_STEP_SUMMARY
+        fi
