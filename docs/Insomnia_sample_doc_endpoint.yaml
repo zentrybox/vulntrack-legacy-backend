@@ -1,0 +1,362 @@
+type: collection.insomnia.rest/5.0
+name: Vulntrack
+meta:
+  id: wrk_e1a9daf1a56a4ea1bd95d6fe8e7fa386
+  created: 1746891497061
+  modified: 1749821440705
+  description: ""
+collection:
+  - name: FG100E
+    meta:
+      id: fld_6cb9e2717f3942a59a818126b2a4e749
+      created: 1746812139026
+      modified: 1747806091479
+      sortKey: -1746812139026
+      description: ""
+    children:
+      - url: https://{{ _.forti_addr }}/api/v2/cmdb/system/ntp
+        name: Get System Data
+        meta:
+          id: req_b4a25e84daca4ee889c3279b68b08b46
+          created: 1746641262109
+          modified: 1746812243975
+          isPrivate: false
+          description: ""
+          sortKey: -1746812145358
+        method: GET
+        headers:
+          - name: Accept
+            value: "*/*"
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: https://{{ _.forti_addr }}/logincheck
+        name: Login Check
+        meta:
+          id: req_554590a4e9934e828da840a6b3e77dea
+          created: 1746644652056
+          modified: 1746812202786
+          isPrivate: false
+          description: ""
+          sortKey: -1746812145458
+        method: POST
+        body:
+          mimeType: application/x-www-form-urlencoded
+          params:
+            - name: username
+              value: admin
+              id: pair_01bb7f09a63b4c9d8aec2c184fd61c4d
+            - name: secretkey
+              value: admin
+              id: pair_edfbe5d7e7874223bb41682f5cb777bf
+        headers:
+          - name: Content-Type
+            value: application/x-www-form-urlencoded
+        scripts:
+          preRequest: ""
+          afterResponse: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    scripts:
+      afterResponse: ""
+      preRequest: ""
+    authentication:
+      type: bearer
+      token: 8yz94b1w9qk7t4gQd0jGxg88G9mxcj
+    environment:
+      forti_addr: 192.168.100.99
+  - name: Backend
+    meta:
+      id: fld_be778db5156e4c5fab025d76f2a66991
+      created: 1747805741697
+      modified: 1749522849108
+      sortKey: -1747805741697
+      description: ""
+    children:
+      - name: user endpoints
+        meta:
+          id: fld_0a5afe6fe36049edac1893a46c89e55a
+          created: 1747806074868
+          modified: 1748057295305
+          sortKey: -1747806074868
+          description: ""
+        children:
+          - url: "{{ _.base_url }}/"
+            name: Base Endpoint
+            meta:
+              id: req_578b65dae60b4c009a531b3a8b53a297
+              created: 1747805870739
+              modified: 1747813852847
+              isPrivate: false
+              description: ""
+              sortKey: -1747806080604
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.1.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/users"
+            name: List users
+            meta:
+              id: req_8677d6c0bba04fe4bfe1f6c2889c0c31
+              created: 1747805982787
+              modified: 1747806342518
+              isPrivate: false
+              description: ""
+              sortKey: -1747806080704
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/11.1.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/users/"
+            name: Create user
+            meta:
+              id: req_8121bda1b4854beda4736deb60b450bd
+              created: 1747806096087
+              modified: 1747813874748
+              isPrivate: false
+              description: ""
+              sortKey: -1747806096087
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "name": "Mark Casas",
+                  "email": "markcasas@mail.com",
+                  "password": "password2"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/11.1.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/users/977eab32-ff66-4b85-8565-0969848ad681"
+            name: Find user by id
+            meta:
+              id: req_06014e1d59f4479b816f8ed330aa504e
+              created: 1747813222464
+              modified: 1747814050815
+              isPrivate: false
+              description: ""
+              sortKey: -1747806096187
+            method: GET
+            headers:
+              - name: accept
+                value: application/json
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: inventory endpoints
+        meta:
+          id: fld_0f8bbd651d744ce7a7611967e73bd53c
+          created: 1748057310124
+          modified: 1748057310124
+          sortKey: -1748057310124
+          description: ""
+        children:
+          - url: http://localhost:8000/inventory/items
+            name: New Request
+            meta:
+              id: req_46672dba4afe45b7bb99805934645068
+              created: 1748057323883
+              modified: 1748057323883
+              isPrivate: false
+              description: ""
+              sortKey: -1748057323883
+            method: GET
+            body:
+              text: '{   "limit": 100,   "offset": 0,   "is_active": true }'
+              mimeType: application/json
+            headers:
+              - name: accept
+                value: application/json
+              - name: Content-Type
+                value: application/json
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+  - name: vulntrack
+    meta:
+      id: fld_c318e48f917246dbba77413c5a527c3a
+      created: 1749522858330
+      modified: 1749821433069
+      sortKey: -1749522858330
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/"
+        name: Welcome
+        meta:
+          id: req_7967005e8286425e8e4776a8bc8678be
+          created: 1749522862233
+          modified: 1749535202278
+          isPrivate: false
+          description: ""
+          sortKey: -1749522862233
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: https://api.search.brave.com/res/v1/web/search
+        name: Brave Search API
+        meta:
+          id: req_6b21197e0b354932a3b2b37ad96b6da0
+          created: 1749804430445
+          modified: 1749804492029
+          isPrivate: false
+          description: ""
+          sortKey: -1749804430445
+        method: GET
+        parameters:
+          - name: q
+            value: Palo Alto Networks PA-220 9.1.3 vulnerability CVE security
+            disabled: false
+          - name: count
+            value: "5"
+            disabled: false
+          - name: country
+            value: US
+            disabled: false
+          - name: search_lang
+            value: en
+            disabled: false
+          - name: ui_lang
+            value: en-US
+            disabled: false
+          - name: freshness
+            value: py
+            disabled: false
+        headers:
+          - name: Accept
+            value: application/json
+          - name: Accept-Encoding
+            value: gzip
+          - name: X-Subscription-Token
+            value: BSA_nqCcxoThuh044SnHb2b40drwk5_
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: https://api.search.brave.com/res/v1/web/search
+        name: web search results
+        meta:
+          id: req_4ca46ba932024c2da2cf01d26b72b562
+          created: 1749804496188
+          modified: 1749821368568
+          isPrivate: false
+          description: ""
+          sortKey: -1749804496188
+        method: GET
+        parameters:
+          - name: q
+            value: Palo Alto Networks PA-220 9.1.3 vulnerability CVE security
+            disabled: false
+          - name: count
+            value: "10"
+            disabled: false
+          - name: country
+            value: US
+            disabled: false
+          - name: search_lang
+            value: en
+            disabled: false
+          - name: ui_lang
+            value: en-US
+            disabled: false
+          - name: freshness
+            value: py
+            disabled: false
+          - name: result_filter
+            value: web
+            disabled: false
+        headers:
+          - name: Accept
+            value: application/json
+          - name: Accept-Encoding
+            value: gzip
+          - name: X-Subscription-Token
+            value: BSA_nqCcxoThuh044SnHb2b40drwk5_
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    environment:
+      base_url: http://127.0.0.1:8000
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_7c0a55112f0749fbb08f76eab529b89e
+    created: 1746639731067
+    modified: 1746645522249
+environments:
+  name: Base Environment
+  meta:
+    id: env_b6ebae7d63144961adefaf86f6545362
+    created: 1746639731064
+    modified: 1747805867434
+    isPrivate: false
+  data:
+    base_url: http://127.0.0.1:8000

@@ -22,9 +22,7 @@ class BraveSearchService:
             "Accept": "application/json",
             "Accept-Encoding": "gzip",
             "X-Subscription-Token": self.api_key,
-        }
-
-    async def search_vulnerabilities(
+        }    async def search_vulnerabilities(
         self, brand: str, model: str, version: str
     ) -> Dict[str, Any]:
         """
@@ -43,8 +41,8 @@ class BraveSearchService:
             query = (
                 f'"{brand}" "{model}" "{version}" vulnerability CVE security exploit'
             )
-
-            params: Dict[str, Any] = {
+            
+            params = {
                 "q": query,
                 "count": settings.brave_search_count,
                 "country": settings.brave_search_country,
@@ -63,9 +61,7 @@ class BraveSearchService:
             logger.info(f"  Query: {query}")
             logger.info(f"  Headers: {self.headers}")
             logger.info(f"  Params: {params}")
-            logger.info(
-                f"  DEBUG - search_lang setting: '{settings.brave_search_search_lang}'"
-            )
+            logger.info(f"  DEBUG - search_lang setting: '{settings.brave_search_search_lang}'")
             logger.info(f"  DEBUG - ui_lang setting: '{settings.brave_search_ui_lang}'")
 
             async with httpx.AsyncClient() as client:
@@ -101,13 +97,8 @@ class BraveSearchService:
                 elif response.status_code == 301:
                     logger.error("❌ Brave Search API: URL redirect (301)")
                     logger.error(f"Response body: {response.text}")
-                    logger.error(
-                        "💡 Check if the API URL is correct - might need different endpoint"
-                    )
-                    return {
-                        "error": "url_redirect",
-                        "details": "API URL might be incorrect",
-                    }
+                    logger.error("💡 Check if the API URL is correct - might need different endpoint")
+                    return {"error": "url_redirect", "details": "API URL might be incorrect"}
                 elif response.status_code == 401:
                     logger.error("❌ Brave Search API: Invalid API key")
                     logger.error(f"Response body: {response.text}")
@@ -166,7 +157,7 @@ class GeminiAIService:
             )
 
             # Gemini API request payload
-            payload: Dict[str, Any] = {
+            payload = {
                 "contents": [{"parts": [{"text": prompt}]}],
                 "generationConfig": {
                     "temperature": settings.gemini_temperature,
@@ -204,25 +195,17 @@ class GeminiAIService:
 
                     result_text = data["candidates"][0]["content"]["parts"][0]["text"]
                     logger.info("📝 Gemini Generated Text:")
-                    logger.info(
-                        f"  Text: {result_text}"
-                    )  # Parse JSON response from Gemini (handle markdown code blocks)
+                    logger.info(f"  Text: {result_text}")                    # Parse JSON response from Gemini (handle markdown code blocks)
                     try:
                         # Try to extract JSON from markdown code blocks if present
                         clean_text = result_text.strip()
-                        if clean_text.startswith("```json") and clean_text.endswith(
-                            "```"
-                        ):
+                        if clean_text.startswith("```json") and clean_text.endswith("```"):
                             # Extract JSON from markdown code block
-                            clean_text = clean_text[
-                                7:-3
-                            ].strip()  # Remove ```json and ```
-                        elif clean_text.startswith("```") and clean_text.endswith(
-                            "```"
-                        ):
+                            clean_text = clean_text[7:-3].strip()  # Remove ```json and ```
+                        elif clean_text.startswith("```") and clean_text.endswith("```"):
                             # Extract from generic code block
                             clean_text = clean_text[3:-3].strip()
-
+                        
                         parsed_result = json.loads(clean_text)
                         logger.info("✅ Gemini JSON parsed successfully:")
                         logger.info(f"  Parsed result: {parsed_result}")

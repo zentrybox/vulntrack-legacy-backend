@@ -1,5 +1,6 @@
-from pydantic_settings import BaseSettings
 from typing import Optional
+
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -37,11 +38,11 @@ class Settings(BaseSettings):
 
     # Brave Search API Configuration
     brave_search_api_key: str = ""
-    brave_search_base_url: str = "https://api.search.brave.com/res/v1/web/search"
+    brave_search_base_url: str = "https://api.search.brave.com/res/v1"
     brave_search_count: int = 10
     brave_search_country: str = "US"
-    brave_search_search_lang: str = "en"  # Must be 'en', not 'en-US'
-    brave_search_ui_lang: str = "en"  # Must be 'en', not 'en-US'
+    brave_search_search_lang: str = "en"  # 2-character language code
+    brave_search_ui_lang: str = "en-US"  # Language-country format (RFC 9110)
 
     # Vulnerability Scanning Settings
     vuln_scan_enabled: bool = True
@@ -77,4 +78,5 @@ class Settings(BaseSettings):
         return f"mongodb://{self.mongodb_user}:{self.mongodb_password}@{self.mongodb_host}:{self.mongodb_port}/{self.mongodb_db_name}"
 
 
+settings = Settings()
 settings = Settings()
