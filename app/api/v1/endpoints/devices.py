@@ -1,17 +1,17 @@
 import uuid
-from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
+
 from app.core.database import get_db
 from app.schemas.device import (
     DeviceCreate,
-    DeviceUpdate,
-    DeviceResponse,
     DeviceList,
+    DeviceResponse,
+    DeviceUpdate,
     DeviceVersionInfo,
 )
 from app.services.device_service import DeviceService
-from app.models.device import Device
 
 router = APIRouter(prefix="/devices", tags=["devices"])
 
@@ -51,8 +51,8 @@ def create_device(device_data: DeviceCreate, db: Session = Depends(get_db)):
 def get_devices(
     skip: int = Query(0, ge=0, description="Number of devices to skip"),
     limit: int = Query(100, ge=1, le=1000, description="Number of devices to return"),
-    is_active: Optional[bool] = Query(None, description="Filter by active status"),
-    user_id: Optional[uuid.UUID] = Query(None, description="Filter by user ID"),
+    is_active: bool | None = Query(None, description="Filter by active status"),
+    user_id: uuid.UUID | None = Query(None, description="Filter by user ID"),
     db: Session = Depends(get_db),
 ):
     """Get all devices with pagination and filtering"""
@@ -64,7 +64,7 @@ def get_devices(
     total = service.get_device_count(is_active=is_active)
 
     return DeviceList(
-        devices=devices,
+        devices=[DeviceResponse.model_validate(device) for device in devices],
         total=total,
         page=skip // limit + 1,
         size=len(devices),
@@ -161,7 +161,7 @@ def deactivate_device(device_id: uuid.UUID, db: Session = Depends(get_db)):
     return device
 
 
-@router.get("/search/by-name", response_model=List[DeviceResponse])
+@router.get("/search/by-name", response_model=list[DeviceResponse])
 def get_devices_by_name(
     name: str = Query(..., min_length=1, description="Device name to search for"),
     db: Session = Depends(get_db),
@@ -172,7 +172,7 @@ def get_devices_by_name(
     return devices
 
 
-@router.get("/search/by-version", response_model=List[DeviceResponse])
+@router.get("/search/by-version", response_model=list[DeviceResponse])
 def get_devices_by_version(
     version: str = Query(..., min_length=1, description="Version to search for"),
     db: Session = Depends(get_db),
@@ -183,10 +183,10 @@ def get_devices_by_version(
     return devices
 
 
-@router.get("/search/by-brand", response_model=List[DeviceResponse])
+@router.get("/search/by-brand", response_model=list[DeviceResponse])
 def get_devices_by_brand(
     brand: str = Query(..., min_length=1, description="Brand to search for"),
-    model: Optional[str] = Query(None, description="Optional model to filter by"),
+    model: str | None = Query(None, description="Optional model to filter by"),
     db: Session = Depends(get_db),
 ):
     """Get devices by brand and optionally by model"""
@@ -195,7 +195,7 @@ def get_devices_by_brand(
     return devices
 
 
-@router.get("/search/general", response_model=List[DeviceResponse])
+@router.get("/search/general", response_model=list[DeviceResponse])
 def search_devices(
     q: str = Query(..., min_length=1, description="Search term"),
     db: Session = Depends(get_db),
@@ -214,13 +214,13 @@ def get_version_summary(db: Session = Depends(get_db)):
     return {"version_summary": summary}
 
 
-@router.get("/versions/list", response_model=List[DeviceVersionInfo])
+@router.get("/versions/list", response_model=list[DeviceVersionInfo])
 def get_devices_version_info(db: Session = Depends(get_db)):
     """Get version information for all active devices"""
     service = DeviceService(db)
     devices = service.get_devices(is_active=True)
 
-    version_info = []
+    version_info: list[DeviceVersionInfo] = []
     for device in devices:
         version_info.append(
             DeviceVersionInfo(
