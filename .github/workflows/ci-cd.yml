@@ -15,8 +15,7 @@ env:
 jobs:
   # ==========================================
   # Code Quality & Security Analysis
-  # ==========================================
-  code-quality:
+  # ==========================================  code-quality:
     name: 🔍 Code Quality & Security
     runs-on: ubuntu-latest
     
@@ -59,7 +58,7 @@ jobs:
         poetry run bandit -r app/
 
     - name: 📊 Upload Security Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: security-report
@@ -71,7 +70,7 @@ jobs:
         poetry run safety check
 
     - name: 📊 Upload Dependency Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: dependency-security-report
@@ -141,9 +140,7 @@ jobs:
           --cov-report=html \
           --cov-report=term-missing \
           --junitxml=pytest-report.xml \
-          -v
-
-    - name: 📊 Upload Coverage Reports
+          -v    - name: 📊 Upload Coverage Reports
       uses: codecov/codecov-action@v3
       with:
         file: ./coverage.xml
@@ -151,7 +148,7 @@ jobs:
         name: codecov-umbrella
 
     - name: 📊 Upload Test Results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: test-results
@@ -226,10 +223,8 @@ jobs:
             --environment docs/test-environment.json \
             --reporters cli,htmlextra \
             --reporter-htmlextra-export newman-report.html
-        fi
-
-    - name: 📊 Upload API Test Results
-      uses: actions/upload-artifact@v3
+        fi    - name: 📊 Upload API Test Results
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: api-test-results
@@ -312,10 +307,8 @@ jobs:
                --run-time 60s \
                --headless \
                --html performance-report.html \
-               -f tests/performance/locustfile.py
-
-    - name: 📊 Upload Performance Results
-      uses: actions/upload-artifact@v3
+               -f tests/performance/locustfile.py    - name: 📊 Upload Performance Results
+      uses: actions/upload-artifact@v4
       with:
         name: performance-results
         path: performance-report.html
