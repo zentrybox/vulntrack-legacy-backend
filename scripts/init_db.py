@@ -10,8 +10,10 @@ This script will:
 
 import os
 import sys
+
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import OperationalError
+
 from app.core.config import settings
 from app.core.database import Base
 from app.models.device import Device  # Import to register the model

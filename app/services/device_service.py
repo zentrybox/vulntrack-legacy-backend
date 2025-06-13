@@ -137,7 +137,7 @@ class DeviceService:
                 Device.brand,
                 func.count(Device.id).label("device_count"),
             )
-            .filter(Device.is_active == True)
+            .filter(Device.is_active == True)  # noqa: E712
             .group_by(Device.version, Device.brand)
             .order_by(Device.brand, Device.version)
             .all()

@@ -4,7 +4,9 @@ Use this when PostgreSQL is not available
 """
 
 import os
+
 from sqlalchemy import create_engine
+
 from app.core.database import Base
 from app.models.device import Device  # Import to register the model
 

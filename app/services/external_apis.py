@@ -252,7 +252,7 @@ You are a cybersecurity expert analyzing search results for potential vulnerabil
 
 DEVICE INFORMATION:
 - Brand: {device_info.get("brand", "Unknown")}
-- Model: {device_info.get("model", "Unknown")}  
+- Model: {device_info.get("model", "Unknown")}
 - Version: {device_info.get("version", "Unknown")}
 
 SEARCH RESULTS TO ANALYZE:

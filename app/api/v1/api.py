@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import devices
-from app.api.v1.endpoints import vulnerability
+
+from app.api.v1.endpoints import devices, vulnerability
 
 api_router = APIRouter()
 

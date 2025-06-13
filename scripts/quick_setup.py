@@ -3,7 +3,9 @@ Quick database setup and server test
 """
 
 import asyncio
+
 from sqlalchemy import create_engine, text
+
 from app.core.database import Base
 from app.models.device import Device
 
