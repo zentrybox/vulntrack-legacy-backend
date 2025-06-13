@@ -1,0 +1,505 @@
+{
+  "success": true,
+  "message": "Vulnerability scan completed",
+  "scan_result": {
+    "device_info": {
+      "brand": "Palo Alto Networks",
+      "model": "PA-220",
+      "version": "9.1.3"
+    },
+    "scan_timestamp": "2025-06-13T08:55:14.573045",
+    "vulnerabilities_found": false,
+    "vulnerability_count": 0,
+    "methods_used": [
+      "local_cve_database",
+      "direct_ai_knowledge",
+      "web_search_filtered"
+    ],
+    "scan_results": {
+      "local_cve": {
+        "vulnerabilities_found": false,
+        "vulnerability_count": 0,
+        "vulnerabilities": [],
+        "source": "mongodb_cve_database"
+      },
+      "ai_direct": {
+        "vulnerabilities_found": false,
+        "error": "json_parse_error",
+        "raw_response": "```json\n{\n  \"vulnerabilities_found\": false,\n  \"confidence_level\": \"low\",\n  \"method\": \"direct_ai_knowledge\",\n  \"vulnerabilities\": [],\n  \"recommendation\": \"Check the Palo Alto Networks support website for security advisories and updates for PA-220 devices running firmware version 9.1.3.  Upgrade to the latest available firmware version as soon as possible. Regularly scan the device for vulnerabilities using a reputable vulnerability scanner.\",\n  \"last_known_secure_version\": \"Unknown\"\n}\n```\n"
+      },
+      "web_search": {
+        "web": {
+          "results": [
+            {
+              "title": "Breaking Down Palo Alto Networks PAN-OS Vulnerability | Armis",
+              "url": "https://www.armis.com/threat-alert/breaking-down-palo-alto-networks-pan-os-vulnerability/",
+              "is_source_local": false,
+              "is_source_both": false,
+              "description": "Threat actors are exploiting a chain of vulnerabilities (<strong>CVE-2025-0108, CVE-2024-9474, and CVE-2025-0111) in Palo Alto Networks firewalls to gain unauthorized, root-level access</strong>, and organizations are urged to apply the patch for CVE-2025-0108 immediately to mitigate the risk.",
+              "page_age": "2025-02-21T23:08:17",
+              "profile": {
+                "name": "Armis",
+                "url": "https://www.armis.com/threat-alert/breaking-down-palo-alto-networks-pan-os-vulnerability/",
+                "long_name": "armis.com",
+                "img": "https://imgs.search.brave.com/1MCQKy_CVpU6_uDZOPrn3p4AY9P7Gg58yx9Sr5VpygA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjc1OTQxMzQ2/NTliMTQ5NGJiOGNi/NGUxMzk5NmIxY2Jj/YjU3ZjEzODE1ZGJj/NjViNjhlMGYwMTc2/MDU2MjBmYi93d3cu/YXJtaXMuY29tLw"
+              },
+              "language": "en",
+              "family_friendly": true,
+              "type": "search_result",
+              "subtype": "generic",
+              "is_live": false,
+              "meta_url": {
+                "scheme": "https",
+                "netloc": "armis.com",
+                "hostname": "www.armis.com",
+                "favicon": "https://imgs.search.brave.com/1MCQKy_CVpU6_uDZOPrn3p4AY9P7Gg58yx9Sr5VpygA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjc1OTQxMzQ2/NTliMTQ5NGJiOGNi/NGUxMzk5NmIxY2Jj/YjU3ZjEzODE1ZGJj/NjViNjhlMGYwMTc2/MDU2MjBmYi93d3cu/YXJtaXMuY29tLw",
+                "path": "  › home  › breaking down palo alto networks pan-os vulnerability"
+              },
+              "thumbnail": {
+                "src": "https://imgs.search.brave.com/YDG7wOloJlCw_vr0S2FOUgp6eCxnZb4U-GNzNt-U1v4/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly93d3cu/YXJtaXMuY29tL3dw/LWNvbnRlbnQvdXBs/b2Fkcy8yMDI0LzA3/L0Vhcmx5LVdhcm5p/bmcuc3Zn",
+                "original": "https://www.armis.com/wp-content/uploads/2024/07/Early-Warning.svg",
+                "logo": true
+              },
+              "age": "February 21, 2025",
+              "extra_snippets": [
+                "Palo Alto marked this issue “Highest” urgency due to its ease of exploitation and serious impact on device integrity. CVE-2024-9474 (Privilege Escalation)2: A previously disclosed PAN-OS vulnerability (CVSS of 6.9) that enables a user with administrator-level access to execute OS-level commands with root privileges.",
+                "The attack uses three vulnerabilities in the chain; if you can stop one of those vulnerabilities from happening, the exploit is blocked. In the chain, Armis Centrix™ for Early Warning blocked CVE-2024-9474 within days of Palo Alto’s patch release which stopped the attack in its tracks. Armis Centrix™ added CVE-2024-9474 to the Early Warning list in November 2024. The CVSS score is 6.9, which most people wouldn’t have patched.",
+                "A recently discovered vulnerability, CVE-2025-0108, found in Palo Alto Networks firewalls, is being actively exploited by threat actors. This new vulnerability is being used in conjunction with two previously identified flaws, CVE-2024-9474 and CVE-2025-0111, to create a potent exploit chain.",
+                "Security researchers have issued warnings that threat actors began exploiting this vulnerability chain within days of Palo Alto releasing a patch for CVE-2025-0108 (February 12, 2025), highlighting the critical need for organizations to apply the patch as soon as possible."
+              ],
+              "cves_found": [
+                "cve-2025-0108",
+                "cve-2024-9474",
+                "cve-2025-0111",
+                "cve-2025-0108"
+              ],
+              "relevance_score": 16,
+              "vuln_keyword_count": 4,
+              "trusted_source": false
+            },
+            {
+              "title": "CVE-2025-0123 PAN-OS: Information Disclosure Vulnerability in HTTP/2 Packet Captures",
+              "url": "https://security.paloaltonetworks.com/CVE-2025-0123",
+              "is_source_local": false,
+              "is_source_both": false,
+              "description": "Palo Alto Networks Security Advisory: CVE-2025-0123 PAN-OS: Information Disclosure Vulnerability in HTTP/2 Packet Captures A vulnerability in the Palo Alto Networks PAN-OS® software <strong>enables unlicensed administrators to view clear-text data captured using the packet capture feature</strong> ...",
+              "page_age": "2025-04-09T16:00:00",
+              "profile": {
+                "name": "Paloaltonetworks",
+                "url": "https://security.paloaltonetworks.com/CVE-2025-0123",
+                "long_name": "security.paloaltonetworks.com",
+                "img": "https://imgs.search.brave.com/NxFBetwj8Xdee1Bnt6T3oA84Ek_hY0fN22ugoKhNlHA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjZmMTUxODlm/ZjUwYjAzNGYyZjBl/NDYyNGQ2Nzc5MzVj/MTc2Y2FhZjZjZTk0/MmM4MDQyYjJlZDhi/YzBkOGQ4OS9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS8"
+              },
+              "language": "en",
+              "family_friendly": true,
+              "type": "search_result",
+              "subtype": "generic",
+              "is_live": false,
+              "meta_url": {
+                "scheme": "https",
+                "netloc": "security.paloaltonetworks.com",
+                "hostname": "security.paloaltonetworks.com",
+                "favicon": "https://imgs.search.brave.com/NxFBetwj8Xdee1Bnt6T3oA84Ek_hY0fN22ugoKhNlHA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjZmMTUxODlm/ZjUwYjAzNGYyZjBl/NDYyNGQ2Nzc5MzVj/MTc2Y2FhZjZjZTk0/MmM4MDQyYjJlZDhi/YzBkOGQ4OS9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS8",
+                "path": "› CVE-2025-0123"
+              },
+              "thumbnail": {
+                "src": "https://imgs.search.brave.com/esN975Z8BablKgLPKpM4LAvuQkHQD4UX5dmST3M25-8/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS9MT1cucG5n",
+                "original": "https://security.paloaltonetworks.com/LOW.png",
+                "logo": false
+              },
+              "age": "April 9, 2025",
+              "extra_snippets": [
+                "Palo Alto Networks Security Advisory: CVE-2025-0123 PAN-OS: Information Disclosure Vulnerability in HTTP/2 Packet Captures A vulnerability in the Palo Alto Networks PAN-OS® software enables unlicensed administrators to view clear-text data captured using the packet capture feature (https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-admin/monitoring/take-packet-captures/take-a-custom-packet-capture) in decrypted HTTP/2 data streams traversing network interfaces on the firewall.",
+                "This feature is available only to authorized Palo Alto Networks personnel permitted to perform troubleshooting. Prisma® Access is not impacted by this vulnerability. Please note that PAN-OS 11.0, PAN-OS 10.0, PAN-OS 9.1, PAN-OS 9.0, and earlier PAN-OS versions have reached their software end-of-life (EoL) dates and are no longer evaluated for vulnerabilities so we do not plan to fix this issue in these EoL versions.",
+                "LOW - CVSS-BT: 1.9 /CVSS-B: 5.9 (CVSS:4.0/AV:L/AC:L/AT:N/PR:H/UI:N/VC:L/VI:N/VA:N/SC:H/SI:N/SA:N/E:U/AU:N/R:A/V:D/RE:M/U:Amber) There is no risk if the firewall is licensed for decryption port mirroring because firewall administrators are already authorized to obtain decrypted packet captures from Palo Alto Networks firewalls.",
+                "Palo Alto Networks is not aware of any malicious exploitation of this issue."
+              ],
+              "cves_found": [
+                "cve-2025-0123",
+                "cve-2025-0123"
+              ],
+              "relevance_score": 15,
+              "vuln_keyword_count": 5,
+              "trusted_source": true
+            },
+            {
+              "title": "CVE-2024-0012 PAN-OS: Authentication Bypass in the Management Web Interface (PAN-SA-2024-0015)",
+              "url": "https://security.paloaltonetworks.com/CVE-2024-0012",
+              "is_source_local": false,
+              "is_source_both": false,
+              "description": "Palo Alto Networks Security Advisory: CVE-2024-0012 PAN-OS: Authentication Bypass in the Management Web Interface (PAN-SA-2024-0015) An authentication bypass in Palo Alto Networks PAN-OS software <strong>enables an unauthenticated attacker with network access to the management web interface to gain</strong> ...",
+              "page_age": "2024-11-18T14:20:00",
+              "profile": {
+                "name": "Paloaltonetworks",
+                "url": "https://security.paloaltonetworks.com/CVE-2024-0012",
+                "long_name": "security.paloaltonetworks.com",
+                "img": "https://imgs.search.brave.com/NxFBetwj8Xdee1Bnt6T3oA84Ek_hY0fN22ugoKhNlHA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjZmMTUxODlm/ZjUwYjAzNGYyZjBl/NDYyNGQ2Nzc5MzVj/MTc2Y2FhZjZjZTk0/MmM4MDQyYjJlZDhi/YzBkOGQ4OS9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS8"
+              },
+              "language": "en",
+              "family_friendly": true,
+              "type": "search_result",
+              "subtype": "generic",
+              "is_live": false,
+              "meta_url": {
+                "scheme": "https",
+                "netloc": "security.paloaltonetworks.com",
+                "hostname": "security.paloaltonetworks.com",
+                "favicon": "https://imgs.search.brave.com/NxFBetwj8Xdee1Bnt6T3oA84Ek_hY0fN22ugoKhNlHA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjZmMTUxODlm/ZjUwYjAzNGYyZjBl/NDYyNGQ2Nzc5MzVj/MTc2Y2FhZjZjZTk0/MmM4MDQyYjJlZDhi/YzBkOGQ4OS9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS8",
+                "path": "› CVE-2024-0012"
+              },
+              "thumbnail": {
+                "src": "https://imgs.search.brave.com/bI_DwzUfPXhXHCWCZBacFADCgn-w6YKpewXbaWwjKPQ/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS9DUklUSUNBTC5w/bmc",
+                "original": "https://security.paloaltonetworks.com/CRITICAL.png",
+                "logo": false
+              },
+              "age": "November 18, 2024",
+              "extra_snippets": [
+                "Palo Alto Networks Security Advisory: CVE-2024-0012 PAN-OS: Authentication Bypass in the Management Web Interface (PAN-SA-2024-0015) An authentication bypass in Palo Alto Networks PAN-OS software enables an unauthenticated attacker with network access to the management web interface to gain PAN-OS administrator privileges to perform administrative actions, tamper with the configuration, or exploit other authenticated privilege escalation vulnerabilities like CVE-2024-9474 (https://security.paloaltonetworks.com/CVE-2024-9474).",
+                "If you configure restricted access to a jump box that is the only system allowed to access the management interface, you greatly reduce the risk of exploitation because attacks would require privileged access using only those IP addresses. MEDIUM - CVSS-BT: 5.9 /CVSS-B: 5.9 (CVSS:4.0/AV:N/AC:L/AT:P/PR:H/UI:N/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N/E:A/AU:N/R:U/V:C/RE:H/U:Red) Palo Alto Networks is aware of an increasing number of attacks that leverage the exploitation of this vulnerability.",
+                "Terms of usePrivacyProduct Security Assurance and Vulnerability Disclosure PolicyReport vulnerabilitiesManage subscriptions · © 2025 Palo Alto Networks, Inc.",
+                "Recommended mitigation—The vast majority of firewalls already follow Palo Alto Networks and industry best practices. However, if you haven’t already, we strongly recommend that you secure access to your management interface according to our best practice deployment guidelines."
+              ],
+              "cves_found": [
+                "cve-2024-0012",
+                "cve-2024-0012"
+              ],
+              "relevance_score": 13,
+              "vuln_keyword_count": 3,
+              "trusted_source": true
+            },
+            {
+              "title": "CVE-2024-3393 PAN-OS: Firewall Denial of Service (DoS) in DNS Security Using a Specially Crafted Packet",
+              "url": "https://security.paloaltonetworks.com/CVE-2024-3393",
+              "is_source_local": false,
+              "is_source_both": false,
+              "description": "Palo Alto Networks Security Advisories / CVE-2024-3393 ... A Denial of Service vulnerability in the DNS Security feature of Palo Alto Networks PAN-OS software <strong>allows an unauthenticated attacker to send a malicious packet through the data plane of the firewall that reboots the firewall</strong>.",
+              "page_age": "2024-12-27T02:30:00",
+              "profile": {
+                "name": "Paloaltonetworks",
+                "url": "https://security.paloaltonetworks.com/CVE-2024-3393",
+                "long_name": "security.paloaltonetworks.com",
+                "img": "https://imgs.search.brave.com/NxFBetwj8Xdee1Bnt6T3oA84Ek_hY0fN22ugoKhNlHA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjZmMTUxODlm/ZjUwYjAzNGYyZjBl/NDYyNGQ2Nzc5MzVj/MTc2Y2FhZjZjZTk0/MmM4MDQyYjJlZDhi/YzBkOGQ4OS9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS8"
+              },
+              "language": "en",
+              "family_friendly": true,
+              "type": "search_result",
+              "subtype": "generic",
+              "is_live": false,
+              "meta_url": {
+                "scheme": "https",
+                "netloc": "security.paloaltonetworks.com",
+                "hostname": "security.paloaltonetworks.com",
+                "favicon": "https://imgs.search.brave.com/NxFBetwj8Xdee1Bnt6T3oA84Ek_hY0fN22ugoKhNlHA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjZmMTUxODlm/ZjUwYjAzNGYyZjBl/NDYyNGQ2Nzc5MzVj/MTc2Y2FhZjZjZTk0/MmM4MDQyYjJlZDhi/YzBkOGQ4OS9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS8",
+                "path": "› CVE-2024-3393"
+              },
+              "thumbnail": {
+                "src": "https://imgs.search.brave.com/A-OjOCIBB7UX4mcUs83YGqfCkUSRPSkxLkF9mwm72L4/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS9ISUdILnBuZw",
+                "original": "https://security.paloaltonetworks.com/HIGH.png",
+                "logo": false
+              },
+              "age": "December 27, 2024",
+              "extra_snippets": [
+                "Palo Alto Networks Security Advisory: CVE-2024-3393 PAN-OS: Firewall Denial of Service (DoS) in DNS Security Using a Specially Crafted Packet A Denial of Service vulnerability in the DNS Security feature of Palo Alto Networks PAN-OS software allows an unauthenticated attacker to send a malicious packet through the data plane of the firewall that reboots the firewall.",
+                "Palo Alto Networks Security Advisories / CVE-2024-3393 ... A Denial of Service vulnerability in the DNS Security feature of Palo Alto Networks PAN-OS software allows an unauthenticated attacker to send a malicious packet through the data plane of the firewall that reboots the firewall.",
+                "Terms of usePrivacyProduct Security Assurance and Vulnerability Disclosure PolicyReport vulnerabilitiesManage subscriptions · © 2025 Palo Alto Networks, Inc.",
+                "Palo Alto Networks is aware of customers experiencing this denial of service (DoS) when their firewall blocks malicious DNS packets that trigger this issue."
+              ],
+              "cves_found": [
+                "cve-2024-3393",
+                "cve-2024-3393"
+              ],
+              "relevance_score": 13,
+              "vuln_keyword_count": 3,
+              "trusted_source": true
+            },
+            {
+              "title": "Threat Brief: Operation MidnightEclipse, Post-Exploitation Activity Related to CVE-2024-3400 (Updated May 20)",
+              "url": "https://unit42.paloaltonetworks.com/cve-2024-3400/",
+              "is_source_local": false,
+              "is_source_both": false,
+              "description": "We detail Operation MidnightEclipse, a campaign <strong>exploiting</strong> command injection <strong>vulnerability</strong> <strong>CVE</strong>-2024-3400, and include protections and mitigations.",
+              "page_age": "2024-07-30T18:24:15",
+              "profile": {
+                "name": "Unit 42",
+                "url": "https://unit42.paloaltonetworks.com/cve-2024-3400/",
+                "long_name": "unit42.paloaltonetworks.com",
+                "img": "https://imgs.search.brave.com/7PpMUA7Mr1lJkHgRzyWcY2XvW6UWj2osnsT08EKmbBE/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYWEwMTZiMWE1/Njc3ZWE1NTFkOTNj/MjJjOGE4YjRlYTA5/ZDVhNWViNmIwYzZh/Y2UwNTIyNzNjMGI2/NDJmMDM2NS91bml0/NDIucGFsb2FsdG9u/ZXR3b3Jrcy5jb20v"
+              },
+              "language": "en",
+              "family_friendly": true,
+              "type": "search_result",
+              "subtype": "generic",
+              "is_live": false,
+              "meta_url": {
+                "scheme": "https",
+                "netloc": "unit42.paloaltonetworks.com",
+                "hostname": "unit42.paloaltonetworks.com",
+                "favicon": "https://imgs.search.brave.com/7PpMUA7Mr1lJkHgRzyWcY2XvW6UWj2osnsT08EKmbBE/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYWEwMTZiMWE1/Njc3ZWE1NTFkOTNj/MjJjOGE4YjRlYTA5/ZDVhNWViNmIwYzZh/Y2UwNTIyNzNjMGI2/NDJmMDM2NS91bml0/NDIucGFsb2FsdG9u/ZXR3b3Jrcy5jb20v",
+                "path": "› cve-2024-3400"
+              },
+              "thumbnail": {
+                "src": "https://imgs.search.brave.com/4m4WQRIk1vs1xK2MSDocF_MfzPOatBPBRBcHUrtebe8/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly91bml0/NDIucGFsb2FsdG9u/ZXR3b3Jrcy5jb20v/d3AtY29udGVudC91/cGxvYWRzLzIwMjQv/MDYvMDdfTmF0aW9u/LVN0YXRlLWN5YmVy/YXR0YWNrc18xOTIw/eDkwMC0zMDB4MzAw/LmpwZw",
+                "original": "https://unit42.paloaltonetworks.com/wp-content/uploads/2024/06/07_Nation-State-cyberattacks_1920x900-300x300.jpg",
+                "logo": false
+              },
+              "age": "July 30, 2024",
+              "extra_snippets": [
+                "This issue is fixed in hotfix releases of PAN-OS 10.2.9-h1, PAN-OS 11.0.4-h1, PAN-OS 11.1.2-h3, and in all later PAN-OS versions. Please see the frequently updated Palo Alto Networks Security Advisory on CVE-2024-3400 for information on hotfixes and the most current guidance for mitigating this vulnerability.",
+                "If you believe your firewall has been compromised, please reach out to Palo Alto Networks support. This issue is fixed in hotfix releases of PAN-OS 10.2.9-h1, PAN-OS 11.0.4-h1, PAN-OS 11.1.2-h3 and all later PAN-OS versions. Hotfixes for other commonly deployed maintenance releases are also available. Additional guidance on mitigation for customers is available in the Security Advisory. A Knowledge Base article, How to Remedy CVE-2024-3400, is available in the Customer Support Portal.",
+                "Palo Alto Networks and Unit 42 are engaged in tracking activity related to CVE-2024-3400 and are working with external researchers, partners and customers to share information transparently and rapidly. A critical command injection vulnerability in Palo Alto Networks PAN-OS software enables an unauthenticated attacker to execute arbitrary code with root privileges on the firewall.",
+                "The vulnerability, assigned CVE-2024-3400, has a CVSS score of 10.0. This issue is applicable only to PAN-OS 10.2, PAN-OS 11.0, and PAN-OS 11.1 firewalls configured with GlobalProtect gateway or GlobalProtect portal (or both). This issue does not affect cloud firewalls (Cloud NGFW), Panorama appliances or Prisma Access. For up-to-date information about affected products and versions, please refer to the Palo Alto Networks Security Advisory on this issue."
+              ],
+              "cves_found": [
+                "cve-2024-3400"
+              ],
+              "relevance_score": 12,
+              "vuln_keyword_count": 5,
+              "trusted_source": true
+            },
+            {
+              "title": "CVE-2024-9474 PAN-OS: Privilege Escalation (PE) Vulnerability in the Web Management Interface",
+              "url": "https://security.paloaltonetworks.com/CVE-2024-9474",
+              "is_source_local": false,
+              "is_source_both": false,
+              "description": "Palo Alto Networks Security Advisory: ... vulnerability in Palo Alto Networks PAN-OS software <strong>allows a PAN-OS administrator with access to the management web interface to perform actions on the firewall with root privileges</strong>....",
+              "page_age": "2024-11-18T14:20:00",
+              "profile": {
+                "name": "Paloaltonetworks",
+                "url": "https://security.paloaltonetworks.com/CVE-2024-9474",
+                "long_name": "security.paloaltonetworks.com",
+                "img": "https://imgs.search.brave.com/NxFBetwj8Xdee1Bnt6T3oA84Ek_hY0fN22ugoKhNlHA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjZmMTUxODlm/ZjUwYjAzNGYyZjBl/NDYyNGQ2Nzc5MzVj/MTc2Y2FhZjZjZTk0/MmM4MDQyYjJlZDhi/YzBkOGQ4OS9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS8"
+              },
+              "language": "en",
+              "family_friendly": true,
+              "type": "search_result",
+              "subtype": "generic",
+              "is_live": false,
+              "meta_url": {
+                "scheme": "https",
+                "netloc": "security.paloaltonetworks.com",
+                "hostname": "security.paloaltonetworks.com",
+                "favicon": "https://imgs.search.brave.com/NxFBetwj8Xdee1Bnt6T3oA84Ek_hY0fN22ugoKhNlHA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjZmMTUxODlm/ZjUwYjAzNGYyZjBl/NDYyNGQ2Nzc5MzVj/MTc2Y2FhZjZjZTk0/MmM4MDQyYjJlZDhi/YzBkOGQ4OS9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS8",
+                "path": "› CVE-2024-9474"
+              },
+              "thumbnail": {
+                "src": "https://imgs.search.brave.com/f9JgHfPfXRHq28QblXes7Zsrze56F7fMpIEfbhbLNHw/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS9NRURJVU0ucG5n",
+                "original": "https://security.paloaltonetworks.com/MEDIUM.png",
+                "logo": false
+              },
+              "age": "November 18, 2024",
+              "extra_snippets": [
+                "Palo Alto Networks Security Advisory: CVE-2024-9474 PAN-OS: Privilege Escalation (PE) Vulnerability in the Web Management Interface A privilege escalation vulnerability in Palo Alto Networks PAN-OS software allows a PAN-OS administrator with access to the management web interface to perform actions on the firewall with root privileges.",
+                "If you configure a specific list of IP addresses that only allow access to the management interface, you greatly reduce the risk of exploitation because attacks would require privileged access using only those IP addresses. MEDIUM - CVSS-BT: 5.9 /CVSS-B: 5.9 (CVSS:4.0/AV:N/AC:L/AT:P/PR:H/UI:N/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N/E:A/AU:N/R:U/V:C/RE:H/U:Red) Palo Alto Networks is aware of an increasing number of attacks that leverage the exploitation of this vulnerability.",
+                "Recommended mitigation—The vast majority of firewalls already follow Palo Alto Networks and industry best practices. However, if you haven’t already, we strongly recommend that you secure access to your management interface according to our best practice deployment guidelines.",
+                "Palo Alto Networks thanks our Deep Product Security Research Team for discovering this issue internally from threat activity."
+              ],
+              "cves_found": [
+                "cve-2024-9474"
+              ],
+              "relevance_score": 11,
+              "vuln_keyword_count": 4,
+              "trusted_source": true
+            },
+            {
+              "title": "Zero-Day Exploitation of Unauthenticated Remote Code Execution Vulnerability in GlobalProtect (CVE-2024-3400) | Volexity",
+              "url": "https://www.volexity.com/blog/2024/04/12/zero-day-exploitation-of-unauthenticated-remote-code-execution-vulnerability-in-globalprotect-cve-2024-3400/",
+              "is_source_local": false,
+              "is_source_both": false,
+              "description": "The issue is an <strong>unauthenticated remote code execution vulnerability with a CVSS base score of 10.0</strong>. Palo Alto Networks has since issued an advisory for CVE-2024-3400 that includes information regarding a threat protection signature released to customers, as well as a timeline for a fix, which ...",
+              "page_age": "2025-02-04T15:38:11",
+              "profile": {
+                "name": "Volexity",
+                "url": "https://www.volexity.com/blog/2024/04/12/zero-day-exploitation-of-unauthenticated-remote-code-execution-vulnerability-in-globalprotect-cve-2024-3400/",
+                "long_name": "volexity.com",
+                "img": "https://imgs.search.brave.com/rrb1TzjULIMEJ4Olyp21XuxdCntpyIeJRArT8aj7o1c/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvODU5NGI2MzI2/MWE5NTVkODVlZmE2/ZWYyODNlZDAwYjI1/MzJiMmYyYWIwMzgw/YWM3OTVlN2Q0ZDUx/MWQ4OGI2YS93d3cu/dm9sZXhpdHkuY29t/Lw"
+              },
+              "language": "en",
+              "family_friendly": true,
+              "type": "search_result",
+              "subtype": "article",
+              "is_live": false,
+              "meta_url": {
+                "scheme": "https",
+                "netloc": "volexity.com",
+                "hostname": "www.volexity.com",
+                "favicon": "https://imgs.search.brave.com/rrb1TzjULIMEJ4Olyp21XuxdCntpyIeJRArT8aj7o1c/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvODU5NGI2MzI2/MWE5NTVkODVlZmE2/ZWYyODNlZDAwYjI1/MzJiMmYyYWIwMzgw/YWM3OTVlN2Q0ZDUx/MWQ4OGI2YS93d3cu/dm9sZXhpdHkuY29t/Lw",
+                "path": "  › home  › blog  › zero-day exploitation of unauthenticated remote code execution vulnerability in globalprotect (cve-2024-3400)"
+              },
+              "thumbnail": {
+                "src": "https://imgs.search.brave.com/iOREWLgXkz5qPf3GNV-YtQAojgpNCx1LUYnxdt7pvgE/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly93d3cu/dm9sZXhpdHkuY29t/L3dwLWNvbnRlbnQv/dXBsb2Fkcy8yMDI0/LzA0L1ZvbGV4aXR5/LUJsb2ctemVyby1k/YXktZXhwbG9pdGF0/aW9uLW9mLXVuYXV0/aGVudGljYXRlZC1y/ZW1vdGUtY29kZS1l/eGVjdXRpb24tdnVs/bmVyYWJpbGl0eS1p/bi1nbG9iYWxwcm90/ZWN0LWN2ZS0yMDI0/LTM0MDAucG5n",
+                "original": "https://www.volexity.com/wp-content/uploads/2024/04/Volexity-Blog-zero-day-exploitation-of-unauthenticated-remote-code-execution-vulnerability-in-globalprotect-cve-2024-3400.png",
+                "logo": false
+              },
+              "age": "February 4, 2025",
+              "extra_snippets": [
+                "On April 10, 2024, Volexity identified zero-day exploitation of a vulnerability found within the GlobalProtect feature of Palo Alto Networks PAN-OS at one of its network security monitoring (NSM) customers. Volexity received alerts regarding suspect network traffic emanating from the customer’s firewall.",
+                "Volexity would like to thank Palo Alto Networks for their partnership, cooperation, and rapid response to this critical issue. Their research can be found here. On April 10, 2024, Volexity identified zero-day exploitation of a vulnerability found within the GlobalProtect feature of Palo Alto Networks PAN-OS at one of its network security monitoring (NSM) customers.",
+                "Volexity worked closely with its customer and the Palo Alto Networks Product Security Incident Response Team (PSIRT) to investigate the root cause of the compromise. Through this cooperative investigation, the Palo Alto Networks PSIRT team was able to confirm the vulnerability as an OS command injection issue and assigned it CVE-2024-3400.",
+                "The issue is an unauthenticated remote code execution vulnerability with a CVSS base score of 10.0. Palo Alto Networks has since issued an advisory for CVE-2024-3400 that includes information regarding a threat protection signature released to customers, as well as a timeline for a fix, which at the time of writing is expected April 14, 2024."
+              ],
+              "cves_found": [
+                "cve-2024-3400",
+                "cve-2024-3400"
+              ],
+              "relevance_score": 11,
+              "vuln_keyword_count": 5,
+              "trusted_source": false
+            },
+            {
+              "title": "CVE-2025-0111 PAN-OS: Authenticated File Read Vulnerability in the Management Web Interface",
+              "url": "https://security.paloaltonetworks.com/CVE-2025-0111",
+              "is_source_local": false,
+              "is_source_both": false,
+              "description": "<strong>Palo</strong> <strong>Alto</strong> <strong>Networks</strong> <strong>Security</strong> Advisory: <strong>CVE</strong>-2025-0111 PAN-OS: Authenticated File Read <strong>Vulnerability</strong> in the Management Web Interface An authenticated file read <strong>vulnerability</strong> in the management web interface of the <strong>Palo</strong> <strong>Alto</strong> <strong>Networks</strong> PAN-OS software enables an authenticated attacker with <strong>network</strong> ...",
+              "page_age": "2025-02-12T17:00:00",
+              "profile": {
+                "name": "Paloaltonetworks",
+                "url": "https://security.paloaltonetworks.com/CVE-2025-0111",
+                "long_name": "security.paloaltonetworks.com",
+                "img": "https://imgs.search.brave.com/NxFBetwj8Xdee1Bnt6T3oA84Ek_hY0fN22ugoKhNlHA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjZmMTUxODlm/ZjUwYjAzNGYyZjBl/NDYyNGQ2Nzc5MzVj/MTc2Y2FhZjZjZTk0/MmM4MDQyYjJlZDhi/YzBkOGQ4OS9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS8"
+              },
+              "language": "en",
+              "family_friendly": true,
+              "type": "search_result",
+              "subtype": "generic",
+              "is_live": false,
+              "meta_url": {
+                "scheme": "https",
+                "netloc": "security.paloaltonetworks.com",
+                "hostname": "security.paloaltonetworks.com",
+                "favicon": "https://imgs.search.brave.com/NxFBetwj8Xdee1Bnt6T3oA84Ek_hY0fN22ugoKhNlHA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjZmMTUxODlm/ZjUwYjAzNGYyZjBl/NDYyNGQ2Nzc5MzVj/MTc2Y2FhZjZjZTk0/MmM4MDQyYjJlZDhi/YzBkOGQ4OS9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS8",
+                "path": "› CVE-2025-0111"
+              },
+              "thumbnail": {
+                "src": "https://imgs.search.brave.com/A-OjOCIBB7UX4mcUs83YGqfCkUSRPSkxLkF9mwm72L4/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS9ISUdILnBuZw",
+                "original": "https://security.paloaltonetworks.com/HIGH.png",
+                "logo": false
+              },
+              "age": "February 12, 2025",
+              "extra_snippets": [
+                "Palo Alto Networks Security Advisory: CVE-2025-0111 PAN-OS: Authenticated File Read Vulnerability in the Management Web Interface An authenticated file read vulnerability in the management web interface of the Palo Alto Networks PAN-OS software enables an authenticated attacker with network access to the management web interface to read files on the PAN-OS filesystem that are readable by the “nobody” user.",
+                "LOW - CVSS-BT: 2.0 /CVSS-B: 5.9 (CVSS:4.0/AV:N/AC:L/AT:P/PR:H/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N/E:U/AU:N/R:U/V:C/RE:M/U:Amber) Palo Alto Networks has observed exploit attempts chaining CVE-2025-0108 with CVE-2024-9474 and CVE-2025-0111 on unpatched and unsecured PAN-OS web management interfaces.",
+                "An authenticated file read vulnerability in the management web interface of the Palo Alto Networks PAN-OS software enables an authenticated attacker with network access to the management web interface to read files on the PAN-OS filesystem that are readable by the “nobody” user. The attacker must have network access to the management web interface to exploit this issue.",
+                "Recommended mitigation—The vast majority of firewalls already follow Palo Alto Networks and industry best practices. However, if you have not already, we strongly recommend that you secure access to your management interface according to our critical deployment guidelines. Specifically, you should restrict management interface access to only trusted internal IP addresses. Review information about how to secure management access to your Palo Alto Networks firewalls:"
+              ],
+              "cves_found": [
+                "cve-2025-0111"
+              ],
+              "relevance_score": 11,
+              "vuln_keyword_count": 4,
+              "trusted_source": true
+            },
+            {
+              "title": "CVE-2025-0120 GlobalProtect App: Local Privilege Escalation (PE) Vulnerability",
+              "url": "https://security.paloaltonetworks.com/CVE-2025-0120",
+              "is_source_local": false,
+              "is_source_both": false,
+              "description": "<strong>Palo</strong> <strong>Alto</strong> <strong>Networks</strong> <strong>Security</strong> Advisory: <strong>CVE</strong>-2025-0120 GlobalProtect App: Local Privilege Escalation (PE) <strong>Vulnerability</strong> <strong>A</strong> <strong>vulnerability</strong> with a privilege management mechanism in the <strong>Palo</strong> <strong>Alto</strong> <strong>Networks</strong> GlobalProtect™ app on Windows devices allows a locally authenticated non-administrative Windows ...",
+              "page_age": "2025-04-09T16:00:00",
+              "profile": {
+                "name": "Paloaltonetworks",
+                "url": "https://security.paloaltonetworks.com/CVE-2025-0120",
+                "long_name": "security.paloaltonetworks.com",
+                "img": "https://imgs.search.brave.com/NxFBetwj8Xdee1Bnt6T3oA84Ek_hY0fN22ugoKhNlHA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjZmMTUxODlm/ZjUwYjAzNGYyZjBl/NDYyNGQ2Nzc5MzVj/MTc2Y2FhZjZjZTk0/MmM4MDQyYjJlZDhi/YzBkOGQ4OS9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS8"
+              },
+              "language": "en",
+              "family_friendly": true,
+              "type": "search_result",
+              "subtype": "generic",
+              "is_live": false,
+              "meta_url": {
+                "scheme": "https",
+                "netloc": "security.paloaltonetworks.com",
+                "hostname": "security.paloaltonetworks.com",
+                "favicon": "https://imgs.search.brave.com/NxFBetwj8Xdee1Bnt6T3oA84Ek_hY0fN22ugoKhNlHA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjZmMTUxODlm/ZjUwYjAzNGYyZjBl/NDYyNGQ2Nzc5MzVj/MTc2Y2FhZjZjZTk0/MmM4MDQyYjJlZDhi/YzBkOGQ4OS9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS8",
+                "path": "› CVE-2025-0120"
+              },
+              "age": "April 9, 2025",
+              "extra_snippets": [
+                "Palo Alto Networks Security Advisory: CVE-2025-0120 GlobalProtect App: Local Privilege Escalation (PE) Vulnerability A vulnerability with a privilege management mechanism in the Palo Alto Networks GlobalProtect™ app on Windows devices allows a locally authenticated non-administrative Windows user to escalate their privileges to NT AUTHORITY\\SYSTEM.",
+                "A vulnerability with a privilege management mechanism in the Palo Alto Networks GlobalProtect™ app on Windows devices allows a locally authenticated non-administrative Windows user to escalate their privileges to NT AUTHORITY\\SYSTEM. However, execution requires that the local user can also successfully exploit a race condition, which makes this vulnerability difficult to exploit.",
+                "Terms of usePrivacyProduct Security Assurance and Vulnerability Disclosure PolicyReport vulnerabilitiesManage subscriptions · © 2025 Palo Alto Networks, Inc.",
+                "Palo Alto Networks is not aware of any malicious exploitation of this issue. ... No workaround or mitigation is available. Palo Alto Networks thanks Maxime ESCOURBIAC, Michelin CERT and Yassine BENGANA, Abicom for Michelin CERT for discovering and reporting this issue."
+              ],
+              "cves_found": [
+                "cve-2025-0120"
+              ],
+              "relevance_score": 11,
+              "vuln_keyword_count": 4,
+              "trusted_source": true
+            },
+            {
+              "title": "CVE-2024-9468 PAN-OS: Firewall Denial of Service (DoS) via a Maliciously Crafted Packet",
+              "url": "https://security.paloaltonetworks.com/CVE-2024-9468",
+              "is_source_local": false,
+              "is_source_both": false,
+              "description": "<strong>Palo Alto Networks is not aware of any malicious exploitation of this issue</strong>. ... This issue is fixed in 10.2.9-h11, 10.2.10-h4, PAN-OS 10.2.11, PAN-OS 11.0.4-h5, PAN-OS 11.0.6, PAN-OS 11.1.3, and all later PAN-OS versions. Customers can block attacks for this vulnerability by disabling this ...",
+              "page_age": "2024-10-09T16:00:00",
+              "profile": {
+                "name": "Paloaltonetworks",
+                "url": "https://security.paloaltonetworks.com/CVE-2024-9468",
+                "long_name": "security.paloaltonetworks.com",
+                "img": "https://imgs.search.brave.com/NxFBetwj8Xdee1Bnt6T3oA84Ek_hY0fN22ugoKhNlHA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjZmMTUxODlm/ZjUwYjAzNGYyZjBl/NDYyNGQ2Nzc5MzVj/MTc2Y2FhZjZjZTk0/MmM4MDQyYjJlZDhi/YzBkOGQ4OS9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS8"
+              },
+              "language": "en",
+              "family_friendly": true,
+              "type": "search_result",
+              "subtype": "generic",
+              "is_live": false,
+              "meta_url": {
+                "scheme": "https",
+                "netloc": "security.paloaltonetworks.com",
+                "hostname": "security.paloaltonetworks.com",
+                "favicon": "https://imgs.search.brave.com/NxFBetwj8Xdee1Bnt6T3oA84Ek_hY0fN22ugoKhNlHA/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvYjZmMTUxODlm/ZjUwYjAzNGYyZjBl/NDYyNGQ2Nzc5MzVj/MTc2Y2FhZjZjZTk0/MmM4MDQyYjJlZDhi/YzBkOGQ4OS9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS8",
+                "path": "› CVE-2024-9468"
+              },
+              "thumbnail": {
+                "src": "https://imgs.search.brave.com/A-OjOCIBB7UX4mcUs83YGqfCkUSRPSkxLkF9mwm72L4/rs:fit:200:200:1:0/g:ce/aHR0cHM6Ly9zZWN1/cml0eS5wYWxvYWx0/b25ldHdvcmtzLmNv/bS9ISUdILnBuZw",
+                "original": "https://security.paloaltonetworks.com/HIGH.png",
+                "logo": false
+              },
+              "age": "October 9, 2024",
+              "extra_snippets": [
+                "Palo Alto Networks Security Advisory: CVE-2024-9468 PAN-OS: Firewall Denial of Service (DoS) via a Maliciously Crafted Packet A memory corruption vulnerability in Palo Alto Networks PAN-OS software allows an unauthenticated attacker to crash PAN-OS due to a crafted packet through the data plane, resulting in a denial of service (DoS) condition.",
+                "Palo Alto Networks is not aware of any malicious exploitation of this issue. ... This issue is fixed in 10.2.9-h11, 10.2.10-h4, PAN-OS 10.2.11, PAN-OS 11.0.4-h5, PAN-OS 11.0.6, PAN-OS 11.1.3, and all later PAN-OS versions. Customers can block attacks for this vulnerability by disabling this setting: Device > Setup Session > Decryption Settings > SSL Decryption Settings > Send handshake messages to CTD for inspection.",
+                "Palo Alto Networks Security Advisories / CVE-2024-9468 ... A memory corruption vulnerability in Palo Alto Networks PAN-OS software allows an unauthenticated attacker to crash PAN-OS due to a crafted packet through the data plane, resulting in a denial of service (DoS) condition.",
+                "Customers with a Threat Prevention subscription, who want to keep domain fronting detection enabled, can block attacks for this vulnerability by enabling Threat ID 94971 (introduced in Applications and Threats content version 8854). This issue was found by Jeff Luo of Palo Alto Networks during internal review."
+              ],
+              "cves_found": [
+                "cve-2024-9468"
+              ],
+              "relevance_score": 10,
+              "vuln_keyword_count": 3,
+              "trusted_source": true
+            }
+          ]
+        },
+        "query": {
+          "original": "\"Palo Alto Networks\" \"PA-220\" \"9.1.3\" vulnerability CVE security exploit",
+          "show_strict_warning": false,
+          "cleaned": "Palo Alto Networks PA-220 9.1.3 vulnerability CVE security exploit",
+          "is_navigational": false,
+          "is_news_breaking": false,
+          "spellcheck_off": false,
+          "country": "us",
+          "bad_results": false,
+          "should_fallback": false,
+          "postal_code": "",
+          "city": "",
+          "header_country": "",
+          "more_results_available": true,
+          "state": ""
+        },
+        "total_raw_results": 24,
+        "filtered_results_count": 10
+      },
+      "ai_analysis": {
+        "vulnerability_found": false,
+        "raw_response": "```json\n{\n  \"vulnerability_found\": false,\n  \"confidence_score\": 0.9,\n  \"method\": \"search_result_analysis\",\n  \"vulnerabilities\": [],\n  \"summary\": \"The search results mention several CVEs affecting Palo Alto Networks devices, but none are explicitly confirmed to affect the specific device model (PA-220) and version (9.1.3) in question.  While some CVEs are high severity,  the lack of explicit confirmation for this specific device/version prevents a definitive vulnerability assessment. Further investigation directly with Palo Alto Networks' support or by checking their official advisory database for this specific device and PAN-OS version is recommended.\",\n  \"false_positives_filtered\": 0\n}\n```\n"
+      }
+    },
+    "source": "no_vulnerabilities_detected",
+    "confidence_score": 0.8,
+    "scan_duration_seconds": 6.680876
+  }
+}

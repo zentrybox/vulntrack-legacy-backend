@@ -1,0 +1,136 @@
+# ============================================
+# Development Docker Compose
+# For local development with hot reload
+# ============================================
+
+version: '3.8'
+
+services:
+  # ==========================================
+  # VulnTrack Backend API (Development)
+  # ==========================================
+  vulntrack-backend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: vulntrack-backend-dev
+    ports:
+      - "8000:8000"
+    environment:
+      # Application settings
+      APP_NAME: "VulnTrack Backend (Development)"
+      ENVIRONMENT: development
+      DEBUG: true
+      SECRET_KEY: development-secret-key-not-for-production
+      
+      # Database settings
+      DATABASE_URL: postgresql://vulntrack:password@postgres-dev:5432/vulntrack_dev
+      
+      # MongoDB settings
+      MONGODB_URL: mongodb://vulntrack:password@mongodb-dev:27017/cve_dev_db
+      
+      # External API settings (use your actual keys)
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      BRAVE_SEARCH_API_KEY: ${BRAVE_SEARCH_API_KEY:-}
+      
+      # Development settings
+      VULN_SCAN_ENABLED: true
+      VULN_SCAN_TIMEOUT: 10
+    volumes:
+      # Mount source code for hot reload
+      - .:/app
+      - /app/.venv  # Exclude virtual environment
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+      mongodb-dev:
+        condition: service_healthy
+    networks:
+      - vulntrack-dev-network
+    command: ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  # ==========================================
+  # PostgreSQL Database (Development)
+  # ==========================================
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: vulntrack-postgres-dev
+    environment:
+      POSTGRES_DB: vulntrack_dev
+      POSTGRES_USER: vulntrack
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"  # Different port to avoid conflicts
+    volumes:
+      - postgres-dev-data:/var/lib/postgresql/data
+    networks:
+      - vulntrack-dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vulntrack -d vulntrack_dev"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ==========================================
+  # MongoDB (Development)
+  # ==========================================
+  mongodb-dev:
+    image: mongo:7-jammy
+    container_name: vulntrack-mongodb-dev
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: vulntrack
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: cve_dev_db
+    ports:
+      - "27018:27017"  # Different port to avoid conflicts
+    volumes:
+      - mongodb-dev-data:/data/db
+    networks:
+      - vulntrack-dev-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ==========================================
+  # Redis (Development)
+  # ==========================================
+  redis-dev:
+    image: redis:7-alpine
+    container_name: vulntrack-redis-dev
+    ports:
+      - "6380:6379"  # Different port to avoid conflicts
+    networks:
+      - vulntrack-dev-network
+    command: redis-server --requirepass password
+
+  # ==========================================
+  # Mailhog (Email Testing)
+  # ==========================================
+  mailhog:
+    image: mailhog/mailhog
+    container_name: vulntrack-mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - vulntrack-dev-network
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  vulntrack-dev-network:
+    driver: bridge
+    name: vulntrack-dev-network
+
+# ==========================================
+# Volumes
+# ==========================================
+volumes:
+  postgres-dev-data:
+    name: vulntrack-postgres-dev-data
+  mongodb-dev-data:
+    name: vulntrack-mongodb-dev-data

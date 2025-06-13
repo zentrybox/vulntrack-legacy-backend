@@ -1,0 +1,227 @@
+# ============================================
+# Docker Compose for VulnTrack Backend
+# Development and Production environments
+# ============================================
+
+version: '3.8'
+
+services:
+  # ==========================================
+  # VulnTrack Backend API
+  # ==========================================
+  vulntrack-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+      args:
+        VERSION: ${VERSION:-development}
+        BUILD_DATE: ${BUILD_DATE:-unknown}
+        VCS_REF: ${VCS_REF:-unknown}
+    container_name: vulntrack-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # Application settings
+      APP_NAME: "VulnTrack Backend"
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      DEBUG: ${DEBUG:-false}
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production}
+      
+      # Database settings
+      DATABASE_URL: postgresql://${DB_USER:-vulntrack}:${DB_PASSWORD:-password}@postgres:5432/${DB_NAME:-vulntrack_db}
+      
+      # MongoDB settings
+      MONGODB_URL: mongodb://${MONGODB_USER:-vulntrack}:${MONGODB_PASSWORD:-password}@mongodb:27017/${MONGODB_DB_NAME:-cve_db}
+      
+      # External API settings
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      BRAVE_SEARCH_API_KEY: ${BRAVE_SEARCH_API_KEY:-}
+      
+      # Vulnerability scanning settings
+      VULN_SCAN_ENABLED: ${VULN_SCAN_ENABLED:-true}
+      VULN_SCAN_TIMEOUT: ${VULN_SCAN_TIMEOUT:-30}
+      VULN_SCAN_MAX_RETRIES: ${VULN_SCAN_MAX_RETRIES:-3}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    networks:
+      - vulntrack-network
+    volumes:
+      - vulntrack-logs:/app/logs
+      - vulntrack-data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ==========================================
+  # PostgreSQL Database
+  # ==========================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: vulntrack-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-vulntrack_db}
+      POSTGRES_USER: ${DB_USER:-vulntrack}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - vulntrack-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-vulntrack} -d ${DB_NAME:-vulntrack_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # MongoDB (CVE Database)
+  # ==========================================
+  mongodb:
+    image: mongo:7-jammy
+    container_name: vulntrack-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER:-vulntrack}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD:-password}
+      MONGO_INITDB_DATABASE: ${MONGODB_DB_NAME:-cve_db}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+      - ./scripts/init-mongodb.js:/docker-entrypoint-initdb.d/init-mongodb.js
+    networks:
+      - vulntrack-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # Redis (Caching & Session Storage)
+  # ==========================================
+  redis:
+    image: redis:7-alpine
+    container_name: vulntrack-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - vulntrack-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-password}
+
+  # ==========================================
+  # Nginx (Reverse Proxy)
+  # ==========================================
+  nginx:
+    image: nginx:alpine
+    container_name: vulntrack-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/vulntrack.conf:/etc/nginx/conf.d/default.conf:ro
+      - nginx-logs:/var/log/nginx
+      - nginx-certs:/etc/nginx/certs:ro
+    depends_on:
+      - vulntrack-backend
+    networks:
+      - vulntrack-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================
+  # Monitoring - Prometheus
+  # ==========================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: vulntrack-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - vulntrack-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+
+  # ==========================================
+  # Monitoring - Grafana
+  # ==========================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: vulntrack-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    networks:
+      - vulntrack-network
+    depends_on:
+      - prometheus
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  vulntrack-network:
+    driver: bridge
+    name: vulntrack-network
+
+# ==========================================
+# Volumes
+# ==========================================
+volumes:
+  postgres-data:
+    name: vulntrack-postgres-data
+  mongodb-data:
+    name: vulntrack-mongodb-data
+  redis-data:
+    name: vulntrack-redis-data
+  vulntrack-logs:
+    name: vulntrack-logs
+  vulntrack-data:
+    name: vulntrack-data
+  nginx-logs:
+    name: vulntrack-nginx-logs
+  nginx-certs:
+    name: vulntrack-nginx-certs
+  prometheus-data:
+    name: vulntrack-prometheus-data
+  grafana-data:
+    name: vulntrack-grafana-data
