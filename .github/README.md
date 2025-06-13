@@ -1,15 +1,3 @@
-# ============================================
-# GitHub Actions Documentation
-# VulnTrack Backend CI/CD Pipeline
-# ============================================
-
-# This repository includes comprehensive GitHub Actions workflows for:
-# - Continuous Integration (CI)
-# - Continuous Deployment (CD)
-# - Security Scanning
-# - Release Management
-# - Automated Testing
-
 ## 🚀 Workflows Overview
 
 ### 1. **CI/CD Pipeline** (`.github/workflows/ci-cd.yml`)
