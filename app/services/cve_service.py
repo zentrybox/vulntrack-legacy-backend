@@ -20,13 +20,29 @@ class CVEService:
     def _connect(self):
         """Connect to MongoDB CVE database"""
         try:
-            self.client = MongoClient(settings.mongodb_connection_url)
+            # Try to connect to MongoDB
+            connection_url = settings.mongodb_connection_url
+            logger.info(f"Attempting to connect to MongoDB: {connection_url}")
+            
+            self.client = MongoClient(
+                connection_url,
+                serverSelectionTimeoutMS=5000,  # 5 second timeout
+                connectTimeoutMS=5000
+            )
+            
+            # Test the connection
+            self.client.admin.command('ping')
+            
             self.database = self.client[settings.mongodb_db_name]
             self.collection = self.database.cves
-            logger.info("Connected to MongoDB CVE database")
+            logger.info("Successfully connected to MongoDB CVE database")
+            
         except Exception as e:
-            logger.error(f"Failed to connect to MongoDB: {e}")
-            raise
+            logger.warning(f"MongoDB connection failed: {e}")
+            logger.info("CVE service will continue without local database (web search only)")
+            self.client = None
+            self.database = None
+            self.collection = None
     
     async def search_vulnerabilities_by_version(
         self, 
