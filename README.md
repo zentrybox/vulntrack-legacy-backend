@@ -62,10 +62,13 @@ Each device includes:
 - `GET /api/v1/devices/versions/list` - Detailed version information
 
 #### 🔍 Vulnerability Scanning
-- `POST /api/v1/vulnerabilities/scan/device/{device_id}` - Scan specific device
-- `POST /api/v1/vulnerabilities/scan/bulk` - Bulk scan multiple devices
-- `GET /api/v1/vulnerabilities/scan/status/{scan_id}` - Get scan status
-- `POST /api/v1/vulnerabilities/scan/device/{device_id}/quick` - Quick scan for specific device
+- `POST /api/v1/vulnerabilities/scan/device/{device_id}` - Full hybrid scan (all sources)
+- `POST /api/v1/vulnerabilities/scan/device/{device_id}/local` - Local CVE database only
+- `POST /api/v1/vulnerabilities/scan/device/{device_id}/ai` - Gemini AI direct knowledge only
+- `POST /api/v1/vulnerabilities/scan/device/{device_id}/web` - Web search + AI filtering only
+- `POST /api/v1/vulnerabilities/scan/device/{device_id}/quick` - Quick local scan (alias for /local)
+- `POST /api/v1/vulnerabilities/scan/devices/batch` - Bulk scan multiple devices
+- `GET /api/v1/vulnerabilities/scan/status` - Get scanning system status
 - `GET /api/v1/vulnerabilities/reports/device/{device_id}` - Device vulnerability report (pending)
 - `GET /api/v1/vulnerabilities/reports/summary` - Organization-wide vulnerability summary (pending)
 
@@ -124,11 +127,11 @@ Each device includes:
 
    # Brave Search API Configuration
    BRAVE_SEARCH_API_KEY=your_brave_search_api_key_here
-   BRAVE_SEARCH_BASE_URL=https://api.search.brave.com/res/v1
+   BRAVE_SEARCH_BASE_URL=https://api.search.brave.com/res/v1/web/search
    BRAVE_SEARCH_COUNT=10
    BRAVE_SEARCH_COUNTRY=US
    BRAVE_SEARCH_SEARCH_LANG=en
-   BRAVE_SEARCH_UI_LANG=en-US
+   BRAVE_SEARCH_UI_LANG=en
 
    # Vulnerability Scanning Settings
    VULN_SCAN_ENABLED=true
