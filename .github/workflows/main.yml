@@ -35,12 +35,15 @@ jobs:
         virtualenvs-create: true
         virtualenvs-in-project: true
 
-    - name: � Load cached venv
+    - name: 📦 Load cached venv
       id: cached-poetry-dependencies
       uses: actions/cache@v3
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: 🔄 Regenerate Poetry Lock File
+      run: poetry lock
 
     - name: 📚 Install Dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
@@ -77,7 +80,7 @@ jobs:
       continue-on-error: true
 
     - name: 🛡️ Dependency Security Check (Safety)
-      run: poetry run safety check
+      run: poetry run safety check --json
       continue-on-error: true
 
   # ==========================================
