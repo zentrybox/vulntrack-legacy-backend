@@ -3,10 +3,13 @@ MongoDB CVE Service
 Handles queries to the local CVE database for vulnerability checking
 """
 
-from typing import List, Dict, Any, Optional
+import logging
+from typing import Any, Dict, List, Optional
+
 from pymongo import MongoClient
 from pymongo.collection import Collection
-import logging
+from pymongo.database import Database
+
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -14,12 +17,12 @@ logger = logging.getLogger(__name__)
 
 class CVEService:
     def __init__(self):
-        self.client: Optional[MongoClient] = None
-        self.database = None
-        self.collection: Optional[Collection] = None
+        self.client: Optional[MongoClient[Dict[str, Any]]] = None
+        self.database: Optional[Database[Dict[str, Any]]] = None
+        self.collection: Optional[Collection[Dict[str, Any]]] = None
         self._connect()
 
-    def _connect(self):
+    def _connect(self) -> None:
         """Connect to MongoDB CVE database"""
         try:
             # Try to connect to MongoDB
@@ -63,8 +66,13 @@ class CVEService:
             List of CVE records matching the criteria
         """
         try:
+            # Check if MongoDB connection is available
+            if self.collection is None:
+                logger.warning("MongoDB not connected, returning empty results")
+                return []
+
             # Search query - looking for CVEs that mention the brand, model, and version
-            query = {
+            query: Dict[str, Any] = {
                 "$and": [
                     {
                         "$or": [
@@ -139,8 +147,13 @@ class CVEService:
             List of CVE records matching the keywords
         """
         try:
+            # Check if MongoDB connection is available
+            if self.collection is None:
+                logger.warning("MongoDB not connected, returning empty results")
+                return []
+
             # Build OR query for keywords
-            keyword_queries = []
+            keyword_queries: List[Dict[str, Any]] = []
             for keyword in keywords:
                 keyword_queries.append(
                     {
@@ -151,7 +164,7 @@ class CVEService:
                     }
                 )
 
-            query = {"$or": keyword_queries}
+            query: Dict[str, Any] = {"$or": keyword_queries}
 
             # Execute query
             results = list(self.collection.find(query).limit(30))
@@ -163,7 +176,7 @@ class CVEService:
             logger.error(f"Error searching CVE database with keywords: {e}")
             return []
 
-    def close_connection(self):
+    def close_connection(self) -> None:
         """Close MongoDB connection"""
         if self.client:
             self.client.close()

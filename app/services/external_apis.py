@@ -33,13 +33,10 @@ class BraveSearchService:
         Args:
             brand: Device brand
             model: Device model
-            version: Software version
-
-        Returns:
+            version: Software version        Returns:
             Search results from Brave API
         """
-        try:
-            # Construct efficient search query for vulnerability research
+        try:  # Construct efficient search query for vulnerability research
             query = (
                 f'"{brand}" "{model}" "{version}" vulnerability CVE security exploit'
             )
@@ -47,11 +44,7 @@ class BraveSearchService:
             params: Dict[str, Any] = {
                 "q": query,
                 "count": settings.brave_search_count,
-                "country": settings.brave_search_country,
-                "search_lang": settings.brave_search_search_lang,
-                "ui_lang": settings.brave_search_ui_lang,
                 "freshness": "py",  # Past year for recent vulnerabilities
-                "spellcheck": 1,
                 "result_filter": "web",  # Only web results
             }
 
@@ -63,10 +56,6 @@ class BraveSearchService:
             logger.info(f"  Query: {query}")
             logger.info(f"  Headers: {self.headers}")
             logger.info(f"  Params: {params}")
-            logger.info(
-                f"  DEBUG - search_lang setting: '{settings.brave_search_search_lang}'"
-            )
-            logger.info(f"  DEBUG - ui_lang setting: '{settings.brave_search_ui_lang}'")
 
             async with httpx.AsyncClient() as client:
                 response = await client.get(

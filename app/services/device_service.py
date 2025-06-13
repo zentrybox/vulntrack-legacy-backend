@@ -1,7 +1,9 @@
 import uuid
 from typing import List, Optional
+
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func
+
 from app.models.device import Device
 from app.schemas.device import DeviceCreate, DeviceUpdate
 
@@ -127,7 +129,7 @@ class DeviceService:
 
         return query.count()
 
-    def get_version_summary(self) -> List[dict]:
+    def get_version_summary(self) -> List[dict[str, object]]:
         """Get version summary for all active devices"""
         result = (
             self.db.query(

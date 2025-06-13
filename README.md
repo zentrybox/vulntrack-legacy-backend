@@ -127,11 +127,8 @@ Each device includes:
 
    # Brave Search API Configuration
    BRAVE_SEARCH_API_KEY=your_brave_search_api_key_here
-   BRAVE_SEARCH_BASE_URL=https://api.search.brave.com/res/v1/web/search
+   BRAVE_SEARCH_BASE_URL=https://api.search.brave.com/res/v1
    BRAVE_SEARCH_COUNT=10
-   BRAVE_SEARCH_COUNTRY=US
-   BRAVE_SEARCH_SEARCH_LANG=en
-   BRAVE_SEARCH_UI_LANG=en
 
    # Vulnerability Scanning Settings
    VULN_SCAN_ENABLED=true
