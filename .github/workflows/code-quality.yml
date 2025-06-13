@@ -44,20 +44,15 @@ jobs:
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --with dev
 
-    - name: 🎨 Check Code Formatting (Black)
+    - name: 🧹 Ruff Format Check
       run: |
-        poetry run black --check --diff app/ tests/
+        poetry run ruff format --check app/ tests/
       continue-on-error: false
 
-    - name: 📏 Check Import Sorting (isort)
+    - name: 🦺 Ruff Lint Check
       run: |
-        poetry run isort --check-only --diff app/ tests/
-      continue-on-error: false
-
-    - name: 🔍 Lint Code (flake8)
-      run: |
-        poetry run flake8 app/ tests/ --format=json --output-file=flake8-report.json
-        poetry run flake8 app/ tests/
+        poetry run ruff check app/ tests/ --output-format=json --output-file=ruff-report.json
+        poetry run ruff check app/ tests/
       continue-on-error: true
 
     - name: 🦆 Type Check (mypy)
@@ -74,8 +69,7 @@ jobs:
     - name: 🛡️ Dependency Security Check (Safety)
       run: |
         poetry run safety check --json --output safety-report.json
-        poetry run safety check
-      continue-on-error: true
+        poetry run safety check      continue-on-error: true
 
     - name: 📊 Upload Security Reports
       uses: actions/upload-artifact@v4
@@ -85,7 +79,7 @@ jobs:
         path: |
           bandit-report.json
           safety-report.json
-          flake8-report.json
+          ruff-report.json
           mypy-report.xml
         retention-days: 30
 
@@ -97,12 +91,10 @@ jobs:
           const fs = require('fs');
           
           let comment = '## 🔍 Code Quality Report\n\n';
-          
-          // Add results summary
+            // Add results summary
           comment += '| Tool | Status |\n|------|--------|\n';
-          comment += '| Black | ✅ Formatting check passed |\n';
-          comment += '| isort | ✅ Import sorting check passed |\n';
-          comment += '| flake8 | ⚠️ See detailed report |\n';
+          comment += '| Ruff Format | ✅ Formatting check passed |\n';
+          comment += '| Ruff Lint | ⚠️ See detailed report |\n';
           comment += '| mypy | ⚠️ See detailed report |\n';
           comment += '| bandit | ⚠️ See security report |\n';
           comment += '| safety | ⚠️ See dependency report |\n';
