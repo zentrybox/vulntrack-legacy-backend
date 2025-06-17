@@ -39,15 +39,13 @@ class Settings(BaseSettings):
     # Brave Search API Configuration
     brave_search_api_key: str = ""
     brave_search_base_url: str = "https://api.search.brave.com/res/v1"
-    brave_search_count: int = 10
-
-    # Vulnerability Scanning Settings
+    brave_search_count: int = 10  # Vulnerability Scanning Settings
     vuln_scan_enabled: bool = True
     vuln_scan_timeout: int = 30
     vuln_scan_max_retries: int = 3
     vuln_scan_cache_ttl: int = 3600
-    vuln_scan_batch_size: int = 5
-    vuln_scan_rate_limit_delay: float = 1.0
+    vuln_scan_batch_size: int = 3  # Reduced batch size for better rate limiting
+    vuln_scan_rate_limit_delay: float = 2.0  # Increased delay between batch operations
 
     model_config = {"env_file": ".env"}
 
