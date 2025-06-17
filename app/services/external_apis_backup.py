@@ -1,6 +1,6 @@
 """
 External API Services
-Handles Brave Search API and Gemini AI API calls with proper rate limiting
+Handles Brave Search API and Gemini AI API calls
 """
 
 import asyncio
@@ -52,16 +52,13 @@ class BraveSearchService:
         Args:
             brand: Device brand
             model: Device model
-            version: Software version
-
-        Returns:
+            version: Software version        Returns:
             Search results from Brave API
         """
         # Apply rate limiting before making the request
         await self._wait_for_rate_limit()
 
-        try:
-            # Construct efficient search query for vulnerability research
+        try:  # Construct efficient search query for vulnerability research
             query = (
                 f'"{brand}" "{model}" "{version}" vulnerability CVE security exploit'
             )
@@ -102,7 +99,6 @@ class BraveSearchService:
                     # Log successful response with correct structure
                     result_count = len(data.get("web", {}).get("results", []))
                     logger.info(f"✅ Brave Search returned {result_count} web results")
-
                     # Log each result for debugging
                     for i, result in enumerate(
                         data.get("web", {}).get("results", [])[:3]
@@ -113,7 +109,6 @@ class BraveSearchService:
                         logger.info(f"  URL {i + 1}: {result.get('url', 'No URL')}")
 
                     return data
-
                 elif response.status_code == 301:
                     logger.error("❌ Brave Search API: URL redirect (301)")
                     logger.error(f"Response body: {response.text}")
@@ -124,22 +119,10 @@ class BraveSearchService:
                         "error": "url_redirect",
                         "details": "API URL might be incorrect",
                     }
-
                 elif response.status_code == 401:
                     logger.error("❌ Brave Search API: Invalid API key")
                     logger.error(f"Response body: {response.text}")
                     return {"error": "invalid_api_key"}
-
-                elif response.status_code == 422:
-                    logger.error("❌ Brave Search API: Validation error (422)")
-                    logger.error(f"Response body: {response.text}")
-                    logger.error(
-                        "💡 Check language parameters - search_lang and ui_lang must be valid ISO codes"
-                    )
-                    return {
-                        "error": "validation_error",
-                        "details": "Invalid search parameters",
-                    }
 
                 elif response.status_code == 429:
                     logger.error("❌ Brave Search API: Rate limit exceeded")
@@ -157,7 +140,7 @@ class BraveSearchService:
                             logger.error(
                                 f"💡 Quota: {meta.get('quota_current', 'N/A')}/{meta.get('quota_limit', 'N/A')} total"
                             )
-                    except Exception:  # noqa: E722
+                    except (json.JSONDecodeError, KeyError, AttributeError):
                         pass
 
                     # Wait longer before potential retry
@@ -169,7 +152,6 @@ class BraveSearchService:
                         "details": "Request rate limit exceeded. Try again later.",
                         "retry_after": 2.0,
                     }
-
                 else:
                     logger.error(f"❌ Brave Search API error: {response.status_code}")
                     logger.error(f"Response body: {response.text}")
@@ -218,7 +200,6 @@ class GeminiAIService:
                     "candidateCount": 1,
                 },
             }
-
             # Make API call
             url = f"{self.base_url}/models/{self.model}:generateContent?key={self.api_key}"
 
@@ -249,9 +230,9 @@ class GeminiAIService:
 
                     result_text = data["candidates"][0]["content"]["parts"][0]["text"]
                     logger.info("📝 Gemini Generated Text:")
-                    logger.info(f"  Text: {result_text}")
-
-                    # Parse JSON response from Gemini (handle markdown code blocks)
+                    logger.info(
+                        f"  Text: {result_text}"
+                    )  # Parse JSON response from Gemini (handle markdown code blocks)
                     try:
                         # Try to extract JSON from markdown code blocks if present
                         clean_text = result_text.strip()
@@ -272,7 +253,6 @@ class GeminiAIService:
                         logger.info("✅ Gemini JSON parsed successfully:")
                         logger.info(f"  Parsed result: {parsed_result}")
                         return parsed_result
-
                     except json.JSONDecodeError as json_error:
                         logger.error(
                             f"❌ Failed to parse Gemini response as JSON: {json_error}"
