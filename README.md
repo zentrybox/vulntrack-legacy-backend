@@ -24,6 +24,17 @@ VulnTrack Backend is a comprehensive FastAPI application designed for managing f
 - **Real-time Vulnerability Assessment** with confidence scoring
 - **CVE Detection and Mapping** with CVSS scoring
 
+### 📊 Comprehensive Reporting System
+- **Scan History Tracking** with detailed audit trail
+- **Device-Level Reports** with vulnerability summaries and trends
+- **Organization-Wide Analytics** with executive dashboards
+- **Compliance Reporting** for security standards
+- **Custom Report Generation** with flexible filtering
+- **Scheduled Reports** with automated delivery
+- **Export Capabilities** (JSON, PDF, CSV, XLSX, HTML)
+- **Historical Trend Analysis** with time-series data
+- **Executive Summaries** for management reporting
+
 ### 🎯 Vulnerability Scanning Pipeline
 1. **Local CVE Database Check** - MongoDB vulnerability lookup
 2. **Gemini AI Direct Knowledge** - AI-based vulnerability assessment
@@ -69,8 +80,19 @@ Each device includes:
 - `POST /api/v1/vulnerabilities/scan/device/{device_id}/quick` - Quick local scan (alias for /local)
 - `POST /api/v1/vulnerabilities/scan/devices/batch` - Bulk scan multiple devices
 - `GET /api/v1/vulnerabilities/scan/status` - Get scanning system status
-- `GET /api/v1/vulnerabilities/reports/device/{device_id}` - Device vulnerability report (pending)
-- `GET /api/v1/vulnerabilities/reports/summary` - Organization-wide vulnerability summary (pending)
+
+#### 📊 Reports and Analytics
+- `GET /api/v1/reports/scans` - Get scan history with filters
+- `GET /api/v1/reports/scans/{scan_id}` - Get detailed scan information
+- `GET /api/v1/reports/devices/{device_id}/summary` - Device summary report
+- `GET /api/v1/reports/devices/{device_id}/vulnerabilities` - Device vulnerability report
+- `GET /api/v1/reports/devices/{device_id}/trends` - Device vulnerability trends
+- `GET /api/v1/reports/organization/summary` - Organization-wide summary
+- `GET /api/v1/reports/organization/compliance` - Compliance report
+- `GET /api/v1/reports/organization/executive` - Executive summary
+- `POST /api/v1/reports/custom` - Generate custom reports
+- `GET /api/v1/reports/scheduled` - List scheduled reports
+- `POST /api/v1/reports/scheduled` - Create scheduled report
 
 ## 🚀 Quick Start
 
@@ -247,6 +269,52 @@ response = requests.get("http://localhost:8000/api/v1/vulnerabilities/reports/su
 summary = response.json()
 ```
 
+### 📈 Using the Reports System
+```python
+# Get scan history for a device
+device_id = "123e4567-e89b-12d3-a456-426614174000"
+response = requests.get(f"http://localhost:8000/api/v1/reports/scans?device_id={device_id}&limit=10")
+scan_history = response.json()
+
+# Get device summary report
+response = requests.get(f"http://localhost:8000/api/v1/reports/devices/{device_id}/summary?include_history=true")
+device_report = response.json()
+
+# Get organization compliance report
+response = requests.get("http://localhost:8000/api/v1/reports/organization/compliance")
+compliance = response.json()
+
+# Generate custom report
+custom_report = {
+    "report_type": "CUSTOM",
+    "filters": {
+        "device_brands": ["Palo Alto Networks", "Fortinet"],
+        "severity_levels": ["CRITICAL", "HIGH"],
+        "date_range": {
+            "start": "2025-01-01",
+            "end": "2025-06-01"
+        }
+    },
+    "include_trends": True,
+    "format": "JSON"
+}
+response = requests.post("http://localhost:8000/api/v1/reports/custom", json=custom_report)
+custom_result = response.json()
+
+# Create scheduled report
+scheduled_report = {
+    "name": "Weekly Security Report",
+    "description": "Weekly vulnerability summary for management",
+    "report_type": "EXECUTIVE_SUMMARY",
+    "format": "PDF",
+    "cron_expression": "0 9 * * 1",  # Every Monday at 9 AM
+    "timezone": "UTC",
+    "recipients": ["security@company.com", "management@company.com"]
+}
+response = requests.post("http://localhost:8000/api/v1/reports/scheduled", json=scheduled_report)
+scheduled = response.json()
+```
+
 ### Searching Devices by Version
 ```python
 response = requests.get("http://localhost:8000/api/v1/devices/search/by-version?version=9.1.5")
@@ -263,21 +331,27 @@ vulntrack-backend/
 │   │   ├── api.py           # API router configuration
 │   │   └── endpoints/       # API endpoints
 │   │       ├── devices.py   # Device management endpoints
-│   │       └── vulnerability.py # Vulnerability scanning endpoints
+│   │       ├── vulnerability.py # Vulnerability scanning endpoints
+│   │       └── reports.py   # Reports and analytics endpoints
 │   ├── core/                # Core functionality
 │   │   ├── config.py        # Configuration management
 │   │   ├── database.py      # Database setup
 │   │   └── security.py      # Security utilities
 │   ├── models/              # SQLAlchemy models
-│   │   └── device.py        # Device data model
+│   │   ├── device.py        # Device data model
+│   │   ├── scan_history.py  # Scan history tracking
+│   │   └── report.py        # Reports and scheduled reports
 │   ├── schemas/             # Pydantic schemas
 │   │   ├── device.py        # Device validation schemas
-│   │   └── vulnerability.py # Vulnerability response schemas
+│   │   ├── vulnerability.py # Vulnerability response schemas
+│   │   ├── scan_history.py  # Scan history schemas
+│   │   └── reports.py       # Report schemas
 │   └── services/            # Business logic
 │       ├── device_service.py       # Device management service
 │       ├── cve_service.py          # CVE database service
 │       ├── external_apis.py        # Brave Search & Gemini AI
-│       └── vulnerability_scanner.py # Main vulnerability scanner
+│       ├── vulnerability_scanner.py # Main vulnerability scanner
+│       └── report_service.py       # Reports and analytics service
 ├── alembic/                 # Database migrations
 ├── tests/                   # Test files
 │   ├── unit/               # Unit tests
@@ -286,8 +360,14 @@ vulntrack-backend/
 ├── scripts/                # Utility scripts
 │   ├── init_db.py         # Database initialization
 │   └── setup_sqlite.py    # SQLite setup for development
-├── cve-local/             # Local CVE data management
+├── utils/                  # Utility modules
+│   └── cve-local/         # Local CVE data management
 ├── docs/                  # Documentation
+│   ├── API_Documentation.md # Detailed API documentation
+│   ├── VulnTrack_Postman_Collection.json # Postman collection
+│   └── ...
+├── test_reports.py        # Reports system test script
+├── REPORTS_IMPLEMENTATION.md # Reports system documentation
 └── pyproject.toml         # Project configuration
 ```
 
