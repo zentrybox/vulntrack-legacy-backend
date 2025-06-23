@@ -11,7 +11,7 @@ from typing import Any, Dict, List
 
 import httpx
 
-from app.core.config import settings
+from app.core.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -324,12 +324,14 @@ IMPORTANT: Respond with ONLY pure JSON. Do NOT use markdown code blocks or backt
 RESPONSE FORMAT (pure JSON only):
 {{
     "vulnerability_found": true/false,
-    "confidence_score": 0.0-1.0,
+    "confidence_score": "0.0-1.0 (as string)",
     "vulnerabilities": [
         {{
             "cve_id": "CVE-YYYY-XXXXX",
             "severity": "Critical/High/Medium/Low",
             "description": "Brief description",
+            "details": "Extended details or context (if available)",
+            "remediation": "AI-suggested remediation (if available)",
             "source_url": "URL if available"
         }}
     ],
