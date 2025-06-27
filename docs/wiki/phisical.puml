@@ -1,0 +1,46 @@
+@startuml
+!define Node(name,desc) node name as "desc" << (N,#DDEEFF) >>
+!define Ext(name,desc) cloud name as "desc" << (E,#DDDDDD) >>
+
+' External Services
+Ext(Supabase, "Supabase Cloud (DB + Auth)")
+' [ICON: Supabase logo]
+Ext(Gemini, "Google Gemini/Genkit API")
+' [ICON: Google Gemini or generic AI/ML]
+Ext(Brave, "Brave Search API")
+' [ICON: Brave browser logo or generic search]
+Ext(Firebase, "Firebase Hosting")
+' [ICON: Firebase logo]
+
+' Docker Host
+Node(DockerHost, "Docker Host\n(VPS, Cloud VM, On-premise)"){
+  ' [ICON: Docker whale or server rack]
+  node "Docker Network: vulntrack" {
+    node "api" as API
+    ' [ICON: FastAPI logo or Python logo]
+    node "worker" as Worker
+    ' [ICON: Celery logo or gear/worker icon]
+    node "flower" as Flower
+    ' [ICON: Flower logo or dashboard/monitor icon]
+    node "redis" as Redis
+    ' [ICON: Redis logo]
+  }
+}
+
+' Frontend (deployed separately)
+Ext(Frontend, "Next.js Frontend\n(Firebase Hosting)")
+' [ICON: Next.js logo, Tailwind CSS, ShadCN/UI]
+
+' Connections
+Frontend --> API : HTTPS (REST)
+API --> Supabase : HTTPS (REST)
+API --> Redis : TCP (broker)
+Worker --> Redis : TCP (broker)
+Worker --> Supabase : HTTPS (REST)
+Worker --> Gemini : HTTPS (AI)
+Worker --> Brave : HTTPS (search)
+Flower --> Redis : TCP (monitor)
+Frontend --> Supabase : HTTPS (JS Client)
+Frontend --> Firebase : HTTPS (deploy)
+
+@enduml

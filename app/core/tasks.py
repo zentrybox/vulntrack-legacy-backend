@@ -1,9 +1,11 @@
+import asyncio
+import logging
+from datetime import datetime, timezone
+
 from app.core.celery_app import celery_app
 from app.core.supabase_client import supabase
 from app.services.vulnerability_scanner import vulnerability_scanner
-import asyncio
-from datetime import datetime, timezone
-import logging
+
 
 @celery_app.task(name="scan.web_ai")
 def scan_web_ai_task(scan_id, device):
@@ -58,7 +60,9 @@ def run_web_ai_scan(scan_id, device):
             name = vuln.get("name", cve_id or "Unnamed Vulnerability")
             # ...existing code...
             if cve_id:
-                existing = supabase.get("vulnerabilities", params={"cve_id": f"eq.{cve_id}"})
+                existing = supabase.get(
+                    "vulnerabilities", params={"cve_id": f"eq.{cve_id}"}
+                )
                 if not existing:
                     vuln_payload = {
                         "cve_id": cve_id,
@@ -104,8 +108,10 @@ def run_web_ai_scan(scan_id, device):
         return {
             "scan_id": scan_id,
             "vulnerabilities_found": len(scan_result.get("vulnerabilities", [])),
-            "status": "completed"
+            "status": "completed",
         }
     except Exception as e:
-        supabase.patch("scans", {"id": scan_id}, {"status": "failed", "summary": str(e)})
+        supabase.patch(
+            "scans", {"id": scan_id}, {"status": "failed", "summary": str(e)}
+        )
         return {"scan_id": scan_id, "status": "failed", "error": str(e)}

@@ -1,0 +1,134 @@
+@startuml
+' =========================
+' UML Class Diagram: VulnTrack Project (Backend + Supabase)
+' =========================
+
+' --- Supabase Tables as Classes ---
+class Device {
+  +id: UUID
+  +name: str
+  +brand: str
+  +model: str
+  +version: str
+  +location: str
+  +ip_address: str
+  +mac_address: str
+  +os: str
+  +os_version: str
+  +is_active: bool
+  +last_seen: datetime
+  +created_at: datetime
+  +updated_at: datetime
+  +tags: list
+}
+
+class Scan {
+  +id: UUID
+  +device_id: UUID
+  +scan_type: str
+  +status: str
+  +started_at: datetime
+  +completed_at: datetime
+  +summary: str
+  +ai_executive_summary: str
+  +ai_recommendations: str
+  +ai_confidence_score: float
+  +vulnerabilities_found: int
+  +created_at: datetime
+}
+
+class ScanResult {
+  +id: UUID
+  +scan_id: UUID
+  +vulnerability_id: UUID
+  +finding: str
+  +details: str
+  +severity: str
+  +status: str
+  +ai_confidence_score: float
+  +ai_suggested_remediation: str
+  +created_at: datetime
+}
+
+class Vulnerability {
+  +id: UUID
+  +cve_id: str
+  +name: str
+  +description: str
+  +severity: str
+  +cvss_score: float
+  +remediation: str
+  +affected_software: str
+  +reference_links: list
+}
+
+class Notification {
+  +id: UUID
+  +user_id: UUID
+  +type: str
+  +title: str
+  +message: str
+  +is_read: bool
+  +link: str
+  +created_at: datetime
+}
+
+class ActivityLogEntry {
+  +id: UUID
+  +user_id: UUID
+  +timestamp: datetime
+  +action: str
+  +details: str
+  +ip_address: str
+  +target_resource_id: UUID
+}
+
+class User {
+  +id: UUID
+  +email: str
+  +name: str
+  +avatar_url: str
+}
+
+' --- Backend Classes (Python/FastAPI) ---
+class ScanService {
+  +start_scan(device_id: UUID, scan_type: str): Scan
+  +get_scan(scan_id: UUID): Scan
+  +list_scans(device_id: UUID): List<Scan>
+}
+
+class VulnerabilityScanner {
+  +scan(device: Device): List<Vulnerability>
+  +analyze_with_ai(vulns: List<Vulnerability>): str
+}
+
+class NotificationService {
+  +notify(user_id: UUID, title: str, message: str): Notification
+  +list_notifications(user_id: UUID): List<Notification>
+}
+
+class SupabaseClient {
+  +get(table: str, filters: dict): list
+  +post(table: str, data: dict): dict
+  +patch(table: str, id: UUID, data: dict): dict
+}
+
+class CeleryWorker {
+  +run_scan(scan_id: UUID, device: Device)
+}
+
+' --- Relationships ---
+Device "1" -- "0..*" Scan : has >
+Scan "1" -- "0..*" ScanResult : produces >
+ScanResult "*" -- "1" Vulnerability : refers >
+Scan "*" -- "1" Device : for >
+Notification "*" -- "1" User : for >
+ActivityLogEntry "*" -- "1" User : by >
+ScanService ..> SupabaseClient : uses >
+VulnerabilityScanner ..> SupabaseClient : uses >
+NotificationService ..> SupabaseClient : uses >
+CeleryWorker ..> ScanService : triggers >
+CeleryWorker ..> VulnerabilityScanner : uses >
+CeleryWorker ..> NotificationService : notifies >
+
+@enduml

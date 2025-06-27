@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 import os
+
 import httpx
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")

@@ -1,0 +1,67 @@
+@startuml
+!define Table(name,desc) class name as "desc" << (T,#FFAAAA) >>
+!define Service(name,desc) class name as "desc" << (S,#AADDEE) >>
+!define Ext(name,desc) class name as "desc" << (E,#DDDDDD) >>
+
+' External Services
+Ext(Gemini, "Google Gemini/Genkit (AI)")
+' [ICON: Google Gemini or generic AI/ML]
+Ext(Brave, "Brave Search API")
+' [ICON: Brave browser logo or generic search]
+Ext(Firebase, "Firebase Hosting")
+' [ICON: Firebase logo]
+
+' Database (Supabase)
+Table(Supabase, "Supabase (Postgres + Auth)")
+' [ICON: Supabase logo]
+Table(Devices, "devices")
+' [ICON: Database table or device icon]
+Table(Scans, "scans")
+' [ICON: Database table or checklist/scan icon]
+Table(ScanResults, "scan_results")
+' [ICON: Database table or report icon]
+Table(Vulnerabilities, "vulnerabilities")
+' [ICON: Database table or bug/vulnerability icon]
+Table(Notifications, "notifications")
+' [ICON: Database table or notification/bell icon]
+Table(ActivityLog, "activity_log_entries")
+' [ICON: Database table or log/history icon]
+Table(Users, "users")
+' [ICON: Database table or user icon]
+
+' Backend Services
+Service(API, "FastAPI Backend")
+' [ICON: FastAPI logo or Python logo]
+Service(Celery, "Celery Worker")
+' [ICON: Celery logo or gear/worker icon]
+Service(Flower, "Flower Monitor")
+' [ICON: Flower logo or dashboard/monitor icon]
+Service(Redis, "Redis Broker")
+' [ICON: Redis logo]
+
+' Frontend
+Service(Frontend, "Next.js Frontend (ShadCN/UI, Tailwind)")
+' [ICON: Next.js logo, ShadCN/UI, Tailwind CSS]
+
+' Relationships
+Frontend --> API : REST API calls (scan, status, etc)
+Frontend --> Supabase : JS Client (auth, data, notifications)
+API --> Supabase : REST API (CRUD, auth)
+API --> Redis : Enqueue scan jobs
+Celery --> Redis : Dequeue scan jobs
+Celery --> Supabase : Write scan results, notifications
+Celery --> Gemini : AI Summaries/Remediation
+Celery --> Brave : Web search for vulnerabilities
+Flower --> Redis : Monitor tasks
+Frontend --> Firebase : Hosting/Deployment
+
+' Data Tables
+Supabase -- Devices
+Supabase -- Scans
+Supabase -- ScanResults
+Supabase -- Vulnerabilities
+Supabase -- Notifications
+Supabase -- ActivityLog
+Supabase -- Users
+
+@enduml
