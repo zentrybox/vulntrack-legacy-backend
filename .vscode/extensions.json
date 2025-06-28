@@ -1,0 +1,58 @@
+{
+    "recommendations": [
+        // Python Development
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "ms-python.isort",
+        "ms-python.flake8",
+        "ms-python.mypy-type-checker",
+        "ms-python.pytest-adapter",
+        // Code Quality & Linting
+        "charliermarsh.ruff",
+        "ms-python.bandit",
+        "ms-python.safety",
+        // FastAPI & Web Development
+        "ms-vscode.vscode-json",
+        "bradlc.vscode-tailwindcss",
+        "ms-vscode.vscode-typescript-next",
+        // Git & Version Control
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+        // Docker Support
+        "ms-azuretools.vscode-docker",
+        // Database & API
+        "ms-mssql.mssql",
+        "cweijan.vscode-postgresql-client2",
+        "humao.rest-client",
+        // Productivity
+        "ms-vscode.vscode-json",
+        "redhat.vscode-yaml",
+        "ms-vscode.vscode-toml",
+        "streetsidesoftware.code-spell-checker",
+        "usernamehw.errorlens",
+        "formulahendry.auto-rename-tag",
+        "christian-kohler.path-intellisense",
+        // Themes & Icons (Optional)
+        "pkief.material-icon-theme",
+        "zhuangtongfa.material-theme",
+        // Testing & Debugging
+        "ms-vscode.test-adapter-converter",
+        "littlefoxteam.vscode-python-test-adapter",
+        // Documentation
+        "ms-vscode.vscode-markdown",
+        "yzhang.markdown-all-in-one",
+        // Code Snippets
+        "ms-python.python-snippets",
+        "ms-vscode.vscode-json",
+        // Environment & Configuration
+        "ms-vscode.vscode-json",
+        "redhat.vscode-xml",
+        "ms-vscode.vscode-toml"
+    ],
+    "unwantedRecommendations": [
+        "ms-python.pylint",
+        "ms-python.autopep8",
+        "ms-python.yapf"
+    ]
+}

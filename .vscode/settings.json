@@ -1,0 +1,187 @@
+{
+    // Python Configuration
+    "python.defaultInterpreterPath": "./.venv/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.autoSearchPaths": true,
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.extraPaths": [
+        "./app"
+    ],
+    "python.analysis.include": [
+        "app/**/*.py"
+    ],
+    "python.analysis.exclude": [
+        "**/node_modules",
+        "**/__pycache__",
+        "**/.git",
+        "**/.venv",
+        "**/build",
+        "**/dist",
+        "**/*.egg-info"
+    ],
+    // Formatting Configuration
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "--line-length=88"
+    ],
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit",
+        "source.fixAll": "explicit"
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit",
+            "source.fixAll": "explicit"
+        }
+    },
+    // Linting Configuration
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": [
+        "--max-line-length=88",
+        "--extend-ignore=E203,E501,W503,W504,F401,E402"
+    ],
+    "python.linting.mypyEnabled": true,
+    "python.linting.mypyArgs": [
+        "--python-version=3.11",
+        "--warn-return-any",
+        "--warn-unused-configs",
+        "--ignore-missing-imports"
+    ],
+    // Ruff Configuration
+    "ruff.enable": true,
+    "ruff.organizeImports": true,
+    "ruff.fixAll": true,
+    "ruff.lint.args": [
+        "--line-length=88",
+        "--target-version=py311"
+    ],
+    // Testing Configuration
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestArgs": [
+        "tests",
+        "-v",
+        "--tb=short",
+        "--asyncio-mode=auto"
+    ],
+    "python.testing.autoTestDiscoverOnSaveEnabled": true,
+    // File Associations
+    "files.associations": {
+        "*.py": "python",
+        "*.pyi": "python",
+        "pyproject.toml": "toml",
+        "poetry.lock": "toml",
+        "requirements.txt": "pip-requirements"
+    },
+    // Search Configuration
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/*.code-search": true,
+        "**/.venv": true,
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        "**/.pytest_cache": true,
+        "**/.mypy_cache": true,
+        "**/.coverage": true,
+        "**/htmlcov": true,
+        "**/.tox": true,
+        "**/build": true,
+        "**/dist": true,
+        "**/*.egg-info": true
+    },
+    // Files Configuration
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        "**/.pytest_cache": true,
+        "**/.mypy_cache": true,
+        "**/.coverage": true,
+        "**/htmlcov": true,
+        "**/.tox": true,
+        "**/build": true,
+        "**/dist": true,
+        "**/*.egg-info": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true
+    },
+    // Editor Configuration
+    "editor.rulers": [
+        88
+    ],
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "editor.wordWrap": "off",
+    "editor.trimAutoWhitespace": true,
+    "editor.renderWhitespace": "boundary",
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": true,
+    "editor.suggestSelection": "first",
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "editor.acceptSuggestionOnEnter": "on",
+    // Terminal Configuration
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.env.linux": {
+        "PYTHONPATH": "${workspaceFolder}/app"
+    },
+    // Git Configuration
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "git.autofetch": true,
+    // Extensions Configuration
+    "extensions.ignoreRecommendations": false,
+    // FastAPI Specific Configuration
+    "python.analysis.extraPaths": [
+        "./app"
+    ],
+    "python.analysis.include": [
+        "app/**/*.py"
+    ],
+    // Docker Configuration (if using Docker)
+    "docker.showStartPage": false,
+    "docker.commands.build": "docker-compose build",
+    "docker.commands.up": "docker-compose up",
+    "docker.commands.down": "docker-compose down",
+    // Debug Configuration
+    "python.terminal.executeInFileDir": true,
+    "python.terminal.launchArgs": [],
+    // IntelliSense Configuration
+    "python.analysis.completeFunctionParens": true,
+    "python.analysis.include": [
+        "app/**/*.py"
+    ],
+    "python.analysis.exclude": [
+        "**/node_modules",
+        "**/__pycache__",
+        "**/.git",
+        "**/.venv",
+        "**/build",
+        "**/dist",
+        "**/*.egg-info"
+    ],
+    // Auto-save Configuration
+    "files.autoSave": "onFocusChange",
+    "files.autoSaveDelay": 1000,
+    // Workspace Configuration
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/**": true,
+        "**/.venv/**": true,
+        "**/__pycache__/**": true,
+        "**/.pytest_cache/**": true,
+        "**/.mypy_cache/**": true,
+        "**/build/**": true,
+        "**/dist/**": true
+    }
+}
